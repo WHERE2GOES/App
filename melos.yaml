@@ -1,0 +1,14 @@
+name: where_to_goes
+
+packages:
+  - app
+  - core
+  - design
+
+scripts:
+  test_all:
+    run: |
+      melos exec -- flutter test
+  analyze_all:
+    run: |
+      melos exec -- flutter analyze

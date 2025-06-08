@@ -3,7 +3,10 @@ name: where_to_goes
 packages:
   - app
   - core
+  - data
   - design
+  - di
+  - feature/**
 
 scripts:
   test_all:

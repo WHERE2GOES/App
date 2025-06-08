@@ -42,6 +42,8 @@ dependencies:
   
   home:
     path: ../feature/home
+  login:
+    path: ../feature/login
   mypage:
     path: ../feature/mypage
   navigation:

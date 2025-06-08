@@ -9,9 +9,17 @@ packages:
   - feature/**
 
 scripts:
-  test_all:
-    run: |
-      melos exec -- flutter test
-  analyze_all:
-    run: |
-      melos exec -- flutter analyze
+  # 모든 패키지의 build_runner 생성 파일들 삭제
+  clean_generated_files:
+    run: melos exec -- flutter clean
+    description: "Cleans generated files from all packages (build_runner outputs)."
+
+  # 모든 패키지에서 build_runner 빌드 실행
+  run_build_runner:
+    run: melos exec -- flutter pub run build_runner build --delete-conflicting-outputs
+    description: "Runs build_runner build in all packages to generate necessary files."
+
+  # 개발 중 Watch 모드로 build_runner 실행 (별도 터미널에서 실행 권장)
+  watch_build_runner:
+    run: melos exec -- flutter pub run build_runner watch --delete-conflicting-outputs
+    description: "Runs build_runner watch in all packages (for development)."

@@ -16,6 +16,8 @@ dependencies:
   di:
     path: ../../di
 
+  get_it: ^8.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -25,7 +27,7 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter:
+# flutter:
 
   # To add assets to your package, add an assets section, like this:
   # assets:

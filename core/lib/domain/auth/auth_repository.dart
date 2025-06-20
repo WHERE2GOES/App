@@ -1,5 +1,6 @@
 import 'package:core/common/result.dart';
-import 'package:core/domain/auth/model/login_request.dart';
+import 'package:core/domain/auth/model/auth_provider.dart';
+import 'package:core/domain/auth/model/auth_token_type.dart';
 
 abstract interface class AuthRepository {
   /// 로그인 여부
@@ -9,12 +10,17 @@ abstract interface class AuthRepository {
   Future<Result<bool>> get isSignUpPending;
 
   /// 로그인
-  /// 
+  ///
   /// 성공 여부를 반환한다.
-  Future<Result<bool>> login({required LoginRequest request});
+  Future<Result<bool>> login({
+    required AuthProvider authProvider,
+    required AuthTokenType authTokenType,
+    required String accessToken,
+    required String? idToken,
+  });
 
   /// 로그아웃
-  /// 
+  ///
   /// 성공 여부를 반환한다.
   Future<Result<bool>> logout();
 }

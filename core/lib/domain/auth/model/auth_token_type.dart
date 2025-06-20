@@ -1,0 +1,1 @@
+enum AuthTokenType { bearer }

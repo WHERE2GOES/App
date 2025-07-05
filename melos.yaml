@@ -7,6 +7,7 @@ packages:
   - design
   - di
   - feature/**
+  - test
 
 scripts:
   # 모든 패키지의 build_runner 생성 파일들 삭제

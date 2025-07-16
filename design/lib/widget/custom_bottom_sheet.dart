@@ -32,12 +32,14 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    if (_height == 0) {
-      final initialHeight =
-          widget.initialHeight ?? MediaQuery.of(context).size.height * 0.3;
-      setState(() => _height = initialHeight);
-      widget.onHeightChanged?.call(initialHeight);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_height == 0) {
+        final initialHeight =
+            widget.initialHeight ?? MediaQuery.of(context).size.height * 0.3;
+        setState(() => _height = initialHeight);
+        widget.onHeightChanged?.call(initialHeight);
+      }
+    });
 
     return Container(
       width: double.infinity,

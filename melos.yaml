@@ -11,7 +11,7 @@ packages:
 
 scripts:
   # 모든 패키지의 build_runner 생성 파일들 삭제
-  clean_generated_files:
+  clean:
     run: melos exec -- flutter clean
     description: "Cleans generated files from all packages (build_runner outputs)."
 

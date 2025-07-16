@@ -1,5 +1,5 @@
 import 'package:design/theme/theme_fonts.dart';
-import 'package:design/widgets/custom_bottom_sheet.dart';
+import 'package:design/widget/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 void main() {

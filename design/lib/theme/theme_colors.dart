@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 final class ThemeColors {
   static const Color highlightedYellow = Color(0xFFFFFD65);
   static const Color pastelYellow = Color(0xFFFFFEA3);
+  static const Color sparseYellow = Color(0xFFFBFFF0);
 
   static const Color highlightedRed = Color(0xFFFF6A6A);
   

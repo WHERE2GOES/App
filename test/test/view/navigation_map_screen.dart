@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:navigation/model/route_guidance_item_prop.dart';
-import 'package:navigation/screen/navigation_map_screen.dart';
+import 'package:navigation/models/route_guidance_item_prop.dart';
+import 'package:navigation/screens/navigation_map_screen.dart';
 
 void main() {
   runApp(
@@ -26,7 +26,7 @@ class _TestAppState extends State<_TestApp> {
           height: double.infinity,
           color: Colors.green,
         ),
-        tutorialStep: null,
+        tutorial: null,
         totalTravelTime: Duration(hours: 35),
         nearbyPlacePopup: null,
         destinationName: "숙명여대",

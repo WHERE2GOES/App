@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:navigation/model/place_prop.dart';
-import 'package:navigation/screen/navigation_nearby_place_screen.dart';
+import 'package:navigation/models/place_prop.dart';
+import 'package:navigation/screens/navigation_nearby_place_screen.dart';
 
 void main() {
   runApp(

@@ -4,14 +4,16 @@ import 'package:design/theme/theme_colors.dart';
 import 'package:design/widget/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:navigation/model/nearby_place_popup_button_prop.dart';
-import 'package:navigation/model/route_guidance_item_prop.dart';
+import 'package:navigation/models/nearby_place_popup_button_prop.dart';
+import 'package:navigation/models/route_guidance_item_prop.dart';
+
+final _overlapBetweenMapAndBottomSheet = 16.0;
 
 class NavigationMapScreen extends StatefulWidget {
   const NavigationMapScreen({
     super.key,
     required this.mapWidget,
-    required this.tutorialStep,
+    required this.tutorial,
     required this.totalTravelTime,
     required this.nearbyPlacePopup,
     required this.destinationName,
@@ -24,7 +26,7 @@ class NavigationMapScreen extends StatefulWidget {
   });
 
   final Widget mapWidget;
-  final int? tutorialStep;
+  final ({int step, VoidCallback onDismissed})? tutorial;
   final Duration totalTravelTime;
   final ({List<NearbyPlacePopupButtonProp> buttons})? nearbyPlacePopup;
   final String destinationName;
@@ -40,33 +42,84 @@ class NavigationMapScreen extends StatefulWidget {
 }
 
 class _NavigationMapScreenState extends State<NavigationMapScreen> {
+  final _timerKey = GlobalKey();
+  final _menuKey = GlobalKey();
+  final _bottomSheetKey = GlobalKey();
+
+  OverlayEntry? _tutorialOverlayEntry;
+  double? _bottomSheetHeight;
+
+  @override
+  void dispose() {
+    _hideTutorial();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final height = _bottomSheetKey.currentContext?.size?.height;
+      if (height != _bottomSheetHeight) {
+        setState(() => _bottomSheetHeight = height);
+      }
+    });
+
     return Stack(
       fit: StackFit.expand,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+        Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildIconButton(
-                    iconAsset: "assets/images/ic_warning.png",
-                    backgroundColor: ThemeColors.grey800,
-                    onClicked: widget.onEmergencyButtonClicked,
+            Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      SizedBox.expand(child: widget.mapWidget),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildIconButton(
+                                  iconAsset: "assets/images/ic_warning.png",
+                                  backgroundColor: ThemeColors.grey800,
+                                  onClicked: widget.onEmergencyButtonClicked,
+                                ),
+                                _buildIconButton(
+                                  iconAsset: "assets/images/ic_location.png",
+                                  backgroundColor: Colors.white,
+                                  onClicked:
+                                      widget.onGoToCurrentLocationButtonClicked,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: _overlapBetweenMapAndBottomSheet),
+                        ],
+                      ),
+                    ],
                   ),
-                  _buildIconButton(
-                    iconAsset: "assets/images/ic_location.png",
-                    backgroundColor: Colors.white,
-                    onClicked: widget.onGoToCurrentLocationButtonClicked,
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(
+                  height:
+                      (_bottomSheetHeight ?? _overlapBetweenMapAndBottomSheet) -
+                      _overlapBetweenMapAndBottomSheet,
+                ),
+              ],
             ),
-            _buildNavigatingBottomSheetContent(),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _buildNavigatingBottomSheetContent(),
+            ),
           ],
         ),
         SafeArea(
@@ -82,6 +135,7 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
                 ),
               ),
               GestureDetector(
+                key: _timerKey,
                 onTap: widget.onTimerClicked,
                 child: Container(
                   width: 97.36,
@@ -105,6 +159,7 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
               Positioned(
                 right: 24,
                 child: _buildIconButton(
+                  key: _menuKey,
                   iconAsset: "assets/images/ic_hamburger.png",
                   backgroundColor: ThemeColors.pastelYellow,
                   onClicked: widget.onMenuButtonClicked,
@@ -118,11 +173,13 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
   }
 
   Widget _buildIconButton({
+    Key? key,
     required String iconAsset,
     required Color backgroundColor,
     required VoidCallback onClicked,
   }) {
     return GestureDetector(
+      key: key,
       onTap: onClicked,
       child: Container(
         width: 40.33,
@@ -143,6 +200,7 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
 
   Widget _buildNavigatingBottomSheetContent() {
     return CustomBottomSheet(
+      key: _bottomSheetKey,
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.3,
         child: Column(
@@ -302,5 +360,39 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
         ),
       ),
     );
+  }
+
+  void _checkAndShowTutorial() {
+    if (_tutorialOverlayEntry != null) return;
+
+    final tutorial = widget.tutorial;
+    if (tutorial == null) return;
+
+    final renderBox = switch (tutorial.step) {
+      0 => _timerKey.currentContext?.findRenderObject(),
+      1 => _menuKey.currentContext?.findRenderObject(),
+      _ => throw Exception("Invalid tutorial step"),
+    };
+    if (renderBox is! RenderBox) return;
+
+    final position = renderBox.localToGlobal(Offset.zero);
+
+    final tutorialOverlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          top: position.dy,
+          left: position.dx,
+          child: Placeholder(),
+        );
+      },
+    );
+
+    Overlay.of(context).insert(tutorialOverlayEntry);
+    _tutorialOverlayEntry = tutorialOverlayEntry;
+  }
+
+  void _hideTutorial() {
+    _tutorialOverlayEntry?.remove();
+    _tutorialOverlayEntry = null;
   }
 }

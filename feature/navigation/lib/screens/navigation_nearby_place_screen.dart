@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:design/theme/theme_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:navigation/model/place_category_button_prop.dart';
-import 'package:navigation/model/place_prop.dart';
+import 'package:navigation/models/place_category_button_prop.dart';
+import 'package:navigation/models/place_prop.dart';
 
 final _animationDuration = const Duration(milliseconds: 100);
 

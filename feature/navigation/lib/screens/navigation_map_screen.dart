@@ -56,6 +56,12 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _checkAndShowTutorial(),
+    );
+
+    final tutorial = widget.tutorial;
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -160,6 +166,16 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
             ],
           ),
         ),
+        if (tutorial != null)
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: tutorial.onDismissed,
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: ThemeColors.grey800.withValues(alpha: 0.7),
+            ),
+          ),
       ],
     );
   }
@@ -352,11 +368,41 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
     );
   }
 
-  void _checkAndShowTutorial() {
-    if (_tutorialOverlayEntry != null) return;
+  Widget _buildNearbyPlacePopup() {
+    final nearbyPlacePopup = widget.nearbyPlacePopup;
+    if (nearbyPlacePopup == null) return const SizedBox.shrink();
 
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.65, vertical: 15.08),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: ThemeColors.grey800, width: 0.6),
+      ),
+      child: Column(
+        spacing: 15,
+        mainAxisSize: MainAxisSize.min,
+        children: nearbyPlacePopup.buttons
+            .map(
+              (button) => GestureDetector(
+                onTap: button.onClicked,
+                child: SvgPicture.asset(
+                  button.imageAsset,
+                  package: "navigation",
+                  width: 166.37,
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  void _checkAndShowTutorial() {
     final tutorial = widget.tutorial;
-    if (tutorial == null) return;
+    final tutorialOverlayEntry = _tutorialOverlayEntry;
+    if (tutorialOverlayEntry != null && tutorial == null) _hideTutorial();
+    if (tutorialOverlayEntry != null || tutorial == null) return;
 
     final renderBox = switch (tutorial.step) {
       0 => _timerKey.currentContext?.findRenderObject(),
@@ -365,20 +411,37 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
     };
     if (renderBox is! RenderBox) return;
 
-    final position = renderBox.localToGlobal(Offset.zero);
+    final anchor = renderBox.localToGlobal(Offset.zero);
+    final start = switch (tutorial.step) {
+      0 => anchor - Offset(31.83, 0),
+      1 => anchor - Offset(267.98, 15.04),
+      _ => throw Exception("Invalid tutorial step"),
+    };
 
-    final tutorialOverlayEntry = OverlayEntry(
+    final newTutorialOverlayEntry = OverlayEntry(
       builder: (context) {
         return Positioned(
-          top: position.dy,
-          left: position.dx,
-          child: Placeholder(),
+          top: start.dy,
+          left: start.dx,
+          child: SvgPicture.asset(
+            switch (tutorial.step) {
+              0 => "assets/images/img_tutorial_timer.svg",
+              1 => "assets/images/img_tutorial_menu.svg",
+              _ => throw Exception("Invalid tutorial step"),
+            },
+            package: "navigation",
+            width: switch (tutorial.step) {
+              0 => 245.11,
+              1 => 308.31,
+              _ => throw Exception("Invalid tutorial step"),
+            },
+          ),
         );
       },
     );
 
-    Overlay.of(context).insert(tutorialOverlayEntry);
-    _tutorialOverlayEntry = tutorialOverlayEntry;
+    Overlay.of(context).insert(newTutorialOverlayEntry);
+    _tutorialOverlayEntry = newTutorialOverlayEntry;
   }
 
   void _hideTutorial() {

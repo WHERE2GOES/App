@@ -34,7 +34,7 @@ class _NavigationAppState extends State<NavigationApp> {
       tutorial: null,
       totalTravelTime: Duration(),
       nearbyPlacePopup: null,
-      destinationName: '',
+      destinationName: "숭실대학교",
       routeGuidanceItems: [],
       onTimerClicked: () {},
       onBackButtonClicked: () {},

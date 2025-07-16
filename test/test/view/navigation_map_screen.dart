@@ -26,7 +26,7 @@ class _TestAppState extends State<_TestApp> {
           height: double.infinity,
           color: Colors.green,
         ),
-        tutorial: null,
+        tutorial: (step: 1, onDismissed: () {}),
         totalTravelTime: Duration(hours: 35),
         nearbyPlacePopup: null,
         destinationName: "숙명여대",

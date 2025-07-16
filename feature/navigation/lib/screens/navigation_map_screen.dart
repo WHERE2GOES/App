@@ -44,7 +44,6 @@ class NavigationMapScreen extends StatefulWidget {
 class _NavigationMapScreenState extends State<NavigationMapScreen> {
   final _timerKey = GlobalKey();
   final _menuKey = GlobalKey();
-  final _bottomSheetKey = GlobalKey();
 
   OverlayEntry? _tutorialOverlayEntry;
   double? _bottomSheetHeight;
@@ -57,13 +56,6 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final height = _bottomSheetKey.currentContext?.size?.height;
-      if (height != _bottomSheetHeight) {
-        setState(() => _bottomSheetHeight = height);
-      }
-    });
-
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -200,164 +192,162 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
 
   Widget _buildNavigatingBottomSheetContent() {
     return CustomBottomSheet(
-      key: _bottomSheetKey,
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.3,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(13),
-              child: RichText(
-                text: TextSpan(
+      maxHeight: MediaQuery.of(context).size.height * 0.75,
+      minHeight: MediaQuery.of(context).size.height * 0.25,
+      onHeightChanged: (height) => setState(() => _bottomSheetHeight = height),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(13),
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  WidgetSpan(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: SvgPicture.asset(
+                        "assets/images/ic_twinkle.svg",
+                        package: "design",
+                        width: 6.45,
+                      ),
+                    ),
+                  ),
+                  TextSpan(
+                    text: widget.destinationName,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: ThemeColors.pastelYellow,
+                    ),
+                  ),
+                  TextSpan(
+                    text: " 까지 경로를 안내해 드릴게요!",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 11.77),
+              itemBuilder: (context, index) {
+                final item = widget.routeGuidanceItems[index];
+
+                return Stack(
                   children: [
-                    WidgetSpan(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: SvgPicture.asset(
-                          "assets/images/ic_twinkle.svg",
-                          package: "design",
-                          width: 6.45,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6.22),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF61615C),
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: ThemeColors.pastelGreen.withValues(
+                              alpha: 0.4,
+                            ),
+                            width: 0.6,
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 21,
+                                  vertical: 6,
+                                ),
+                                child: Row(
+                                  spacing: 6,
+                                  children: [
+                                    Transform.rotate(
+                                      angle: switch (item.routeGuidanceType) {
+                                        RouteGuidanceType.turnLeft => pi / 2,
+                                        RouteGuidanceType.turnRight => -pi / 2,
+                                        _ => 0,
+                                      },
+                                      child: Image.asset(
+                                        switch (item.routeGuidanceType) {
+                                          RouteGuidanceType.straight =>
+                                            "assets/images/ic_arrow_up.png",
+                                          RouteGuidanceType.turnLeft =>
+                                            "assets/images/ic_arrow_up.png",
+                                          RouteGuidanceType.turnRight =>
+                                            "assets/images/ic_arrow_up.png",
+                                          RouteGuidanceType.crosswalk =>
+                                            "assets/images/ic_crosswalk.png",
+                                        },
+                                        package: "navigation",
+                                        width: 28,
+                                      ),
+                                    ),
+                                    Text(
+                                      item.description,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                right: 10.11,
+                                bottom: 3.62,
+                              ),
+                              child: Text(
+                                "${item.distance}m",
+                                style: const TextStyle(
+                                  color: ThemeColors.pastelYellow,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    TextSpan(
-                      text: widget.destinationName,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: ThemeColors.pastelYellow,
-                      ),
-                    ),
-                    TextSpan(
-                      text: " 까지 경로를 안내해 드릴게요!",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
+                    Positioned(
+                      top: 0,
+                      left: 3.7,
+                      child: Container(
+                        width: 12.44,
+                        height: 12.44,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: ThemeColors.pastelGreen,
+                        ),
+                        child: Text(
+                          "${index + 1}",
+                          style: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w400,
+                            color: ThemeColors.grey800,
+                          ),
+                        ),
                       ),
                     ),
                   ],
-                ),
-              ),
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const SizedBox(height: 6.46);
+              },
+              itemCount: widget.routeGuidanceItems.length,
             ),
-            Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 11.77),
-                itemBuilder: (context, index) {
-                  final item = widget.routeGuidanceItems[index];
-
-                  return Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6.22),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF61615C),
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: ThemeColors.pastelGreen.withValues(
-                                alpha: 0.4,
-                              ),
-                              width: 0.6,
-                            ),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 21,
-                                    vertical: 6,
-                                  ),
-                                  child: Row(
-                                    spacing: 6,
-                                    children: [
-                                      Transform.rotate(
-                                        angle: switch (item.routeGuidanceType) {
-                                          RouteGuidanceType.turnLeft => pi / 2,
-                                          RouteGuidanceType.turnRight =>
-                                            -pi / 2,
-                                          _ => 0,
-                                        },
-                                        child: Image.asset(
-                                          switch (item.routeGuidanceType) {
-                                            RouteGuidanceType.straight =>
-                                              "assets/images/ic_arrow_up.png",
-                                            RouteGuidanceType.turnLeft =>
-                                              "assets/images/ic_arrow_up.png",
-                                            RouteGuidanceType.turnRight =>
-                                              "assets/images/ic_arrow_up.png",
-                                            RouteGuidanceType.crosswalk =>
-                                              "assets/images/ic_crosswalk.png",
-                                          },
-                                          package: "navigation",
-                                          width: 28,
-                                        ),
-                                      ),
-                                      Text(
-                                        item.description,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 10.11,
-                                  bottom: 3.62,
-                                ),
-                                child: Text(
-                                  "${item.distance}m",
-                                  style: const TextStyle(
-                                    color: ThemeColors.pastelYellow,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 3.7,
-                        child: Container(
-                          width: 12.44,
-                          height: 12.44,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: ThemeColors.pastelGreen,
-                          ),
-                          child: Text(
-                            "${index + 1}",
-                            style: const TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w400,
-                              color: ThemeColors.grey800,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 6.46);
-                },
-                itemCount: widget.routeGuidanceItems.length,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

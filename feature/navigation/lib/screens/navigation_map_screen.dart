@@ -480,7 +480,7 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
     final newOverlayEntry = OverlayEntry(
       builder: (context) {
         return Positioned(
-          top: anchor.dy + size.height +  13,
+          top: anchor.dy + size.height + 13,
           right: 24,
           child: _buildNearbyPlacePopup(),
         );

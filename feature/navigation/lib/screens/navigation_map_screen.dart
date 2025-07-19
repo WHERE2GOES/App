@@ -126,49 +126,55 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
           ],
         ),
         SafeArea(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Positioned(
-                left: 24,
-                child: _buildIconButton(
-                  iconAsset: "assets/images/ic_left_triangle_arrow.png",
-                  backgroundColor: Colors.white,
-                  onClicked: widget.onBackButtonClicked,
-                ),
-              ),
-              GestureDetector(
-                key: _timerKey,
-                onTap: widget.onTimerClicked,
-                child: Container(
-                  width: 97.36,
-                  height: 37.24,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: ThemeColors.pastelYellow,
-                    border: Border.all(color: ThemeColors.grey800, width: 0.6),
-                    borderRadius: BorderRadius.circular(5),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Positioned(
+                  left: 0,
+                  child: _buildIconButton(
+                    iconAsset: "assets/images/ic_left_triangle_arrow.png",
+                    backgroundColor: Colors.white,
+                    onClicked: widget.onBackButtonClicked,
                   ),
-                  child: Text(
-                    "${widget.totalTravelTime.inHours.toString().padLeft(2, "0")}:${widget.totalTravelTime.inMinutes.remainder(60).toString().padLeft(2, "0")}",
-                    style: const TextStyle(
-                      fontSize: 20.73,
-                      fontWeight: FontWeight.w600,
-                      color: ThemeColors.grey800,
+                ),
+                GestureDetector(
+                  key: _timerKey,
+                  onTap: widget.onTimerClicked,
+                  child: Container(
+                    width: 97.36,
+                    height: 37.24,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: ThemeColors.pastelYellow,
+                      border: Border.all(
+                        color: ThemeColors.grey800,
+                        width: 0.6,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      "${widget.totalTravelTime.inHours.toString().padLeft(2, "0")}:${widget.totalTravelTime.inMinutes.remainder(60).toString().padLeft(2, "0")}",
+                      style: const TextStyle(
+                        fontSize: 20.73,
+                        fontWeight: FontWeight.w600,
+                        color: ThemeColors.grey800,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                right: 24,
-                child: _buildIconButton(
-                  key: _menuKey,
-                  iconAsset: "assets/images/ic_hamburger.png",
-                  backgroundColor: ThemeColors.pastelYellow,
-                  onClicked: widget.onMenuButtonClicked,
+                Positioned(
+                  right: 0,
+                  child: _buildIconButton(
+                    key: _menuKey,
+                    iconAsset: "assets/images/ic_hamburger.png",
+                    backgroundColor: ThemeColors.pastelYellow,
+                    onClicked: widget.onMenuButtonClicked,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         if (tutorial != null)

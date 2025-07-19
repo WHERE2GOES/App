@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:navigation/models/place_prop.dart';
 import 'package:navigation/models/place_type.dart';
 import 'package:navigation/screens/navigation_map_screen.dart';
 import 'package:navigation/screens/navigation_nearby_place_screen.dart';
+import 'package:navigation/utils/determine_position.dart';
 
 class NavigationApp extends StatefulWidget {
   const NavigationApp({super.key});
@@ -21,25 +24,25 @@ class _NavigationAppState extends State<NavigationApp> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) _back();
-      },
-      child: Navigator(
-        key: _navigatorKey,
-        onGenerateRoute: (settings) {
-          return MaterialPageRoute(
-            builder: (context) {
-              return switch (settings.name) {
+    return Navigator(
+      key: _navigatorKey,
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) {
+            return BackButtonListener(
+              onBackButtonPressed: () async {
+                _back();
+                return true;
+              },
+              child: switch (settings.name) {
                 '/' => _buildNavigationMapScreen(),
                 '/nearby-place' => _buildNavigationNearbyPlaceScreen(),
                 _ => throw Exception("Invalid route"),
-              };
-            },
-          );
-        },
-      ),
+              },
+            );
+          },
+        );
+      },
     );
   }
 
@@ -76,7 +79,7 @@ class _NavigationAppState extends State<NavigationApp> {
         () => _shouldShowNearbyPlacePopup = !_shouldShowNearbyPlacePopup,
       ),
       onEmergencyButtonClicked: () {},
-      onGoToCurrentLocationButtonClicked: () {},
+      onGoToCurrentLocationButtonClicked: _moveMapToCurrentPosition,
     );
   }
 
@@ -91,7 +94,118 @@ class _NavigationAppState extends State<NavigationApp> {
           )
           .toList(),
       selectedPlaceCategoryIndex: _selectedPlaceType?.index ?? 0,
-      places: [],
+      places: [
+        (
+          distance: 75,
+          name: "올리브영 옆 화장실",
+          isHighligted: true,
+          placeDetailIcon: PlaceDetailIcon.human,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.viewLocation,
+          likeCount: 200,
+          isLiked: true,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 120,
+          name: "스타벅스 안 상가 화장실",
+          isHighligted: true,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 125,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 235,
+          name: "공용 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 45,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 325,
+          name: "메가커피 안 상가 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 20,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 400,
+          name: "올리브영 옆 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 14,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 75,
+          name: "올리브영 옆 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.human,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.viewLocation,
+          likeCount: 200,
+          isLiked: true,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 120,
+          name: "스타벅스 안 상가 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 125,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 235,
+          name: "공용 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 45,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 325,
+          name: "메가커피 안 상가 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 20,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+        (
+          distance: 400,
+          name: "올리브영 옆 화장실",
+          isHighligted: false,
+          placeDetailIcon: PlaceDetailIcon.pin,
+          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+          likeCount: 14,
+          isLiked: false,
+          onClicked: () {},
+          onLikeButtonClicked: () {},
+        ),
+      ],
       shouldShowLoadingIndicatorAtBottom: false,
       onLastPlaceRendered: () {},
     );
@@ -101,7 +215,7 @@ class _NavigationAppState extends State<NavigationApp> {
     if (_navigatorKey.currentState?.canPop() ?? false) {
       _navigatorKey.currentState?.pop();
     } else {
-      Navigator.of(context).pop();
+      SystemNavigator.pop();
     }
   }
 
@@ -114,5 +228,21 @@ class _NavigationAppState extends State<NavigationApp> {
       ),
     );
     mapController = controller;
+  }
+
+  void _moveMapToCurrentPosition() async {
+    final currentLocation = await determinePosition();
+    print(currentLocation.latitude);
+    print(currentLocation.longitude);
+
+    mapController?.evaluateJavascript(
+      source: [
+        "window.panMapTo(",
+        currentLocation.latitude.toString(),
+        ",",
+        currentLocation.longitude.toString(),
+        ");",
+      ].join(),
+    );
   }
 }

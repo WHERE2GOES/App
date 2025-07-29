@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:navigation/models/place_prop.dart';
 import 'package:navigation/models/place_type.dart';
@@ -239,8 +238,6 @@ class _NavigationAppState extends State<NavigationApp> {
 
   void _moveMapToCurrentPosition() async {
     final currentLocation = await determinePosition();
-    print(currentLocation.latitude);
-    print(currentLocation.longitude);
 
     mapController?.evaluateJavascript(
       source: [

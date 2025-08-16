@@ -5,7 +5,9 @@ import 'package:core/domain/geolocation/model/emergency_entity.dart';
 import 'package:core/domain/geolocation/model/place_category.dart';
 import 'package:core/domain/geolocation/model/place_entity.dart';
 import 'package:core/domain/geolocation/model/route_point_entity.dart';
+import 'package:injectable/injectable.dart';
 
+@Singleton(as: GeolocationRepository)
 class GeolocationRepositoryImpl implements GeolocationRepository {
   const GeolocationRepositoryImpl();
 

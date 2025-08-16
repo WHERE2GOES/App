@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class DioModule {
-  @named
-  @lazySingleton
+  @injectable
   Dio getDio() => Dio();
 }

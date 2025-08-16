@@ -4,12 +4,8 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class TmapApiServiceModule {
-  @named
   @lazySingleton
-  TmapApiService getTmapApiService({
-    @Named.from(Dio) required Dio dio,
-    @Named("base_url") required String baseUrl,
-  }) {
-    return TmapApiService(dio, baseUrl: baseUrl);
+  TmapApiService getTmapApiService({required Dio dio}) {
+    return TmapApiService(dio);
   }
 }

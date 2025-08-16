@@ -8,7 +8,7 @@ import 'package:data/sources/server/services/server_api_service.dart';
 import 'package:data/utils/call_with_auth.dart';
 import 'package:injectable/injectable.dart';
 
-@Singleton(as: AuthRepository)
+@LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   final AuthPreference authPreference;
   final ServerApiService serverApiService;
@@ -79,7 +79,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<bool>> logout() async {
+  Future<Result<void>> logout() async {
     try {
       await callWithAuth(
         authPreference: authPreference,
@@ -91,7 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await authPreference.clear();
 
-      return Success(data: true);
+      return Success(data: null);
     } on Exception catch (e) {
       return Failure(exception: e);
     }

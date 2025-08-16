@@ -7,7 +7,7 @@ import 'package:core/domain/geolocation/model/place_entity.dart';
 import 'package:core/domain/geolocation/model/route_point_entity.dart';
 import 'package:injectable/injectable.dart';
 
-@Singleton(as: GeolocationRepository)
+@LazySingleton(as: GeolocationRepository)
 class GeolocationRepositoryImpl implements GeolocationRepository {
   const GeolocationRepositoryImpl();
 

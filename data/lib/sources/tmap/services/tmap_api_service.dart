@@ -6,8 +6,7 @@ part 'tmap_api_service.g.dart';
 
 @RestApi(baseUrl: "https://apis.openapi.sk.com")
 abstract class TmapApiService {
-  factory TmapApiService(Dio dio, {String baseUrl}) =
-      _TmapApiService;
+  factory TmapApiService(Dio dio, {String baseUrl}) = _TmapApiService;
 
   @POST("/tmap/routes/pedestrian")
   @FormUrlEncoded()

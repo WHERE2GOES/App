@@ -1,5 +1,7 @@
 import 'package:data/sources/local/auth_preference.dart';
 import 'package:data/sources/server/services/server_api_service.dart';
+import 'package:core/common/exception/not_logged_in_exception.dart';
+import 'package:dio/dio.dart';
 
 Future<T> callWithAuth<T>({
   required AuthPreference authPreference,
@@ -8,14 +10,22 @@ Future<T> callWithAuth<T>({
 }) async {
   try {
     final accessToken = await authPreference.accessToken;
-    if (accessToken == null) throw Exception("No access token found");
+    if (accessToken == null) throw NotLoggedInException();
+
     return await action(accessToken);
-  } catch (e) {
+  } on DioException catch (e) {
+    if (e.response?.statusCode != 401) rethrow;
+
     final refreshToken = await authPreference.refreshToken;
     if (refreshToken == null) throw Exception("No refresh token found");
-    // TODO: 토큰 재발급
-    final accessToken = await authPreference.accessToken;
-    if (accessToken == null) throw Exception("No access token found");
-    return await action(accessToken);
+
+    final response = await serverApiService.refreshToken(
+      refreshToken: refreshToken,
+    );
+
+    await authPreference.setRefreshToken(response.refreshToken);
+    await authPreference.setAccessToken(response.accessToken);
+
+    return await action(response.accessToken);
   }
 }

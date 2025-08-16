@@ -12,6 +12,7 @@ abstract interface class AuthRepository {
   /// 로그인
   ///
   /// 성공 여부를 반환한다.
+  /// 사용자가 가입 절차를 아직 완료하지 않은 경우 실패한다.
   Future<Result<bool>> login({
     required AuthProvider authProvider,
     required AuthTokenType authTokenType,
@@ -20,7 +21,5 @@ abstract interface class AuthRepository {
   });
 
   /// 로그아웃
-  ///
-  /// 성공 여부를 반환한다.
-  Future<Result<bool>> logout();
+  Future<Result<void>> logout();
 }

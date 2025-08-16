@@ -83,6 +83,10 @@ class ServerApiService {
     }
   }
 
+  Future<s.TokenResponse> refreshToken({required String refreshToken}) async {
+    throw UnimplementedError();
+  }
+
   Future<void> logout({required String accessToken}) async {
     await openapi.getLoginAPIApi().logout(
       headers: _getAuthorizationHeaders(accessToken),

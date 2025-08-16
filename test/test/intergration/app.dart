@@ -1,12 +1,18 @@
+import 'package:data/di/configure_dependencies.dart';
 import 'package:design/theme/theme_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:login/apps/login_app.dart';
 import 'package:navigation/apps/navigation_app.dart';
 
-void main() {
-  KakaoSdk.init(nativeAppKey: '5def7287d22fe0861d08d2de8bbbc553');
+void main() async {
+  configureDependencies();
+  
+  await dotenv.load(fileName: ".env");
+  String appKey = dotenv.env["KAKAO_APP_KEY"]!;
+  KakaoSdk.init(nativeAppKey: appKey);
 
   final router = GoRouter(
     routes: [
@@ -27,7 +33,6 @@ void main() {
             path: '/navigation',
             builder: (context, state) {
               final latlngs = state.uri.queryParameters["latlngs"];
-              print(latlngs);
 
               return NavigationApp(initialCoursePositionString: latlngs);
             },

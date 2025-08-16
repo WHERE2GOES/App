@@ -1,14 +1,11 @@
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-@named
 @lazySingleton
 class AuthPreference {
   final SharedPreferencesAsync prefs;
 
-  const AuthPreference({
-    @Named.from(SharedPreferencesAsync) required this.prefs,
-  });
+  const AuthPreference({required this.prefs});
 
   static const String _accessTokenKey = "access_token";
   static const String _refreshTokenKey = "refresh_token";

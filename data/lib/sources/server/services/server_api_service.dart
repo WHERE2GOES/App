@@ -8,7 +8,7 @@ import 'package:openapi/openapi.dart';
 class ServerApiService {
   final Openapi openapi;
 
-  const ServerApiService({@Named.from(Openapi) required this.openapi});
+  const ServerApiService({required this.openapi});
 
   Future<s.TokenResponse> loginWithKakao({required String token}) async {
     try {

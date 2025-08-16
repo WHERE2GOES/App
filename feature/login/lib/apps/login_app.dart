@@ -1,4 +1,10 @@
+import 'package:core/common/result.dart';
+import 'package:core/domain/auth/auth_repository.dart';
+import 'package:core/domain/auth/model/auth_provider.dart';
+import 'package:core/domain/auth/model/auth_token_type.dart';
+import 'package:di/di.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:login/screens/login_screen.dart';
 
@@ -12,6 +18,8 @@ class LoginApp extends StatefulWidget {
 }
 
 class _LoginAppState extends State<LoginApp> {
+  final _authRepository = locator.get<AuthRepository>();
+
   @override
   Widget build(BuildContext context) {
     return LoginScreen(
@@ -21,20 +29,48 @@ class _LoginAppState extends State<LoginApp> {
   }
 
   void _loginWithKakao() async {
-    try {
-      final token = switch (await isKakaoTalkInstalled()) {
-        true => await UserApi.instance.loginWithKakaoTalk(),
-        false => await UserApi.instance.loginWithKakaoAccount(),
-      };
+    final token = await _getKakaoAccessToken();
 
-      // TODO: 서버에서 로그인 처리
+    final result = await _authRepository.login(
+      authProvider: AuthProvider.kakao,
+      authTokenType: AuthTokenType.bearer,
+      accessToken: token.accessToken,
+      idToken: null,
+    );
+
+    if (result is Success) {
       widget.onLoginSucceeded();
-    } catch (error) {
-      // TODO: 에러 처리
     }
   }
 
-  void _loginWithGoogle() {
-    // TODO: google login
+  void _loginWithGoogle() async {
+    const scopes = ['email'];
+
+    final user = await GoogleSignIn.instance.authenticate(scopeHint: scopes);
+    final auth = await user.authorizationClient.authorizationForScopes(scopes);
+
+    final accessToken = auth?.accessToken;
+    if (accessToken == null) {
+      throw Exception("Google login failed. Access token not arrived.");
+    }
+
+    final result = await _authRepository.login(
+      authProvider: AuthProvider.google,
+      authTokenType: AuthTokenType.bearer,
+      accessToken: accessToken,
+      idToken: null,
+    );
+
+    if (result is Success) {
+      widget.onLoginSucceeded();
+    }
+  }
+
+  Future<OAuthToken> _getKakaoAccessToken() async {
+    try {
+      return await UserApi.instance.loginWithKakaoTalk();
+    } catch (e) {
+      return await UserApi.instance.loginWithKakaoAccount();
+    }
   }
 }

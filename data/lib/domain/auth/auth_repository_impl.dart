@@ -14,8 +14,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final ServerApiService serverApiService;
 
   const AuthRepositoryImpl({
-    @Named.from(AuthPreference) required this.authPreference,
-    @Named.from(ServerApiService) required this.serverApiService,
+    required this.authPreference,
+    required this.serverApiService,
   });
 
   @override

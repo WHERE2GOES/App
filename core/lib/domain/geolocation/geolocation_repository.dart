@@ -11,12 +11,8 @@ abstract interface class GeolocationRepository {
     required double latitude,
     required double longitude,
     required PlaceCategory placeCategory,
-
-    /// 조회 반경 (단위: 미터)
-    int radius = 1000,
-
-    /// 최대 조회 결과 수
-    int limit = 50,
+    int radius = 1000, // 조회 반경 (단위: 미터)
+    int limit = 50, // 최대 조회 결과 수
   });
 
   /// 주소 조회

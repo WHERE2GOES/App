@@ -26,9 +26,25 @@ class _TestAppState extends State<_TestApp> {
           height: double.infinity,
           color: Colors.green,
         ),
-        tutorial: (step: 1, onDismissed: () {}),
+        tutorial: null, // (step: 1, onDismissed: () {}),
         totalTravelTime: Duration(hours: 35),
-        nearbyPlacePopup: null,
+        nearbyPlacePopup: (
+          buttons: [
+            (
+              imageAsset: "assets/images/img_place_restroom.svg",
+              onClicked: () {},
+            ),
+            (
+              imageAsset: "assets/images/img_place_accommodation.svg",
+              onClicked: () {},
+            ),
+            (
+              imageAsset: "assets/images/img_place_restaurant.svg",
+              onClicked: () {},
+            ),
+          ],
+          onDismissed: () {},
+        ),
         destinationName: "숙명여대",
         routeGuidanceItems: [
           (

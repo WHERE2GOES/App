@@ -122,7 +122,7 @@ class _NavigationNearbyPlaceScreenState
     return ListView.separated(
       padding: EdgeInsets.only(
         top: 15,
-        bottom: MediaQuery.viewPaddingOf(context).bottom,
+        bottom: MediaQuery.viewPaddingOf(context).bottom + 15,
       ),
       itemBuilder: (context, index) {
         if (index == widget.places.length) {

@@ -28,7 +28,8 @@ class NavigationMapScreen extends StatefulWidget {
   final Widget mapWidget;
   final ({int step, VoidCallback onDismissed})? tutorial;
   final Duration totalTravelTime;
-  final ({List<NearbyPlacePopupButtonProp> buttons})? nearbyPlacePopup;
+  final ({List<NearbyPlacePopupButtonProp> buttons, VoidCallback onDismissed})?
+  nearbyPlacePopup;
   final String destinationName;
   final List<RouteGuidanceItemProp> routeGuidanceItems;
   final VoidCallback onTimerClicked;
@@ -46,21 +47,25 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
   final _menuKey = GlobalKey();
 
   OverlayEntry? _tutorialOverlayEntry;
+  OverlayEntry? _nearbyPlacePopupOverlayEntry;
   double? _bottomSheetHeight;
 
   @override
   void dispose() {
     _hideTutorial();
+    _hideNearbyPlacePopup();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _checkAndShowTutorial(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowTutorial();
+      _checkAndShowNearbyPlacePopup();
+    });
 
     final tutorial = widget.tutorial;
+    final nearbyPlacePopup = widget.nearbyPlacePopup;
 
     return Stack(
       fit: StackFit.expand,
@@ -121,55 +126,71 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
           ],
         ),
         SafeArea(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Positioned(
-                left: 24,
-                child: _buildIconButton(
-                  iconAsset: "assets/images/ic_left_triangle_arrow.png",
-                  backgroundColor: Colors.white,
-                  onClicked: widget.onBackButtonClicked,
-                ),
-              ),
-              GestureDetector(
-                key: _timerKey,
-                onTap: widget.onTimerClicked,
-                child: Container(
-                  width: 97.36,
-                  height: 37.24,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: ThemeColors.pastelYellow,
-                    border: Border.all(color: ThemeColors.grey800, width: 0.6),
-                    borderRadius: BorderRadius.circular(5),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Positioned(
+                  left: 0,
+                  child: _buildIconButton(
+                    iconAsset: "assets/images/ic_left_triangle_arrow.png",
+                    backgroundColor: Colors.white,
+                    onClicked: widget.onBackButtonClicked,
                   ),
-                  child: Text(
-                    "${widget.totalTravelTime.inHours.toString().padLeft(2, "0")}:${widget.totalTravelTime.inMinutes.remainder(60).toString().padLeft(2, "0")}",
-                    style: const TextStyle(
-                      fontSize: 20.73,
-                      fontWeight: FontWeight.w600,
-                      color: ThemeColors.grey800,
+                ),
+                GestureDetector(
+                  key: _timerKey,
+                  onTap: widget.onTimerClicked,
+                  child: Container(
+                    width: 97.36,
+                    height: 37.24,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: ThemeColors.pastelYellow,
+                      border: Border.all(
+                        color: ThemeColors.grey800,
+                        width: 0.6,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      "${widget.totalTravelTime.inHours.toString().padLeft(2, "0")}:${widget.totalTravelTime.inMinutes.remainder(60).toString().padLeft(2, "0")}",
+                      style: const TextStyle(
+                        fontSize: 20.73,
+                        fontWeight: FontWeight.w600,
+                        color: ThemeColors.grey800,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                right: 24,
-                child: _buildIconButton(
-                  key: _menuKey,
-                  iconAsset: "assets/images/ic_hamburger.png",
-                  backgroundColor: ThemeColors.pastelYellow,
-                  onClicked: widget.onMenuButtonClicked,
+                Positioned(
+                  right: 0,
+                  child: _buildIconButton(
+                    key: _menuKey,
+                    iconAsset: "assets/images/ic_hamburger.png",
+                    backgroundColor: ThemeColors.pastelYellow,
+                    onClicked: widget.onMenuButtonClicked,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         if (tutorial != null)
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: tutorial.onDismissed,
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: ThemeColors.grey800.withValues(alpha: 0.7),
+            ),
+          ),
+        if (nearbyPlacePopup != null)
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: nearbyPlacePopup.onDismissed,
             child: Container(
               width: double.infinity,
               height: double.infinity,
@@ -447,5 +468,37 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
   void _hideTutorial() {
     _tutorialOverlayEntry?.remove();
     _tutorialOverlayEntry = null;
+  }
+
+  void _checkAndShowNearbyPlacePopup() {
+    final nearbyPlacePopup = widget.nearbyPlacePopup;
+    if (nearbyPlacePopup == null) {
+      _hideNearbyPlacePopup();
+      return;
+    }
+
+    final renderBox = _menuKey.currentContext?.findRenderObject();
+    if (renderBox is! RenderBox) return;
+
+    final anchor = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    final newOverlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          top: anchor.dy + size.height + 13,
+          right: 24,
+          child: _buildNearbyPlacePopup(),
+        );
+      },
+    );
+
+    Overlay.of(context).insert(newOverlayEntry);
+    _nearbyPlacePopupOverlayEntry = newOverlayEntry;
+  }
+
+  void _hideNearbyPlacePopup() {
+    _nearbyPlacePopupOverlayEntry?.remove();
+    _nearbyPlacePopupOverlayEntry = null;
   }
 }

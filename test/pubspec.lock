@@ -96,6 +96,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  dashed_path:
+    dependency: transitive
+    description:
+      name: dashed_path
+      sha256: "711cb86eb57e023e8ad9199ea717eaf0be0906743a884c261fbe2711dc12fe9d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   data:
     dependency: "direct main"
     description:

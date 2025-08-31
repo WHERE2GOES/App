@@ -52,7 +52,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: _buildCourseSummary(),
             ),
-            const SizedBox(height: 36),
+            const SizedBox(height: 75),
             _buildCourseScoreGraph(),
             ListView.separated(
               shrinkWrap: true,
@@ -169,7 +169,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                         clipBehavior: Clip.antiAlias,
                         decoration: BoxDecoration(
                           color: ThemeColors.grey800,
-                          borderRadius: BorderRadius.circular(double.infinity),
+                          borderRadius: BorderRadius.circular(999),
                         ),
                       ),
                     ),
@@ -192,7 +192,10 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
   }
 
   Widget _buildCourseScoreGraph() {
+    final size = MediaQuery.of(context).size.width - 120;
+
     return CourseScorePolygonGraph(
+      size: Size(size, size),
       courseScore:
           widget.courseScore ??
           (weather: 0, festival: 0, difficulty: 0, food: 0, culture: 0),

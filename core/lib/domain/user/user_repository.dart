@@ -7,22 +7,24 @@ import 'package:core/domain/user/model/user_entity.dart';
 
 abstract interface class UserRepository {
   /// 사용자 정보
-  Future<Result<UserEntity>> get user;
+  Future<Result<UserEntity>> getUserInfo();
 
-  /// 사용자 여정 취향 질문
-  Future<Result<List<PreferenceQuestionEntity>>> get preferenceQuestions;
+  /// 사용자 여정 취향 질문 리스트
+  Future<Result<List<PreferenceQuestionEntity>>> getPreferenceQuestions();
 
   /// 사용자 가입 절차 수행
   Future<Result<void>> signUp({required SignUpRequest request});
 
   /// 사용자 정보 수정
-  /// 
+  ///
   /// 성공 여부를 반환한다.
   Future<Result<void>> updateProfile({required ProfileUpdateRequest request});
 
   /// 사용자 여정 취향 수정
-  /// 
+  ///
   /// 사용자 여정 취향 질문에 대한 답을 요청으로 받는다.
   /// 성공 여부를 반환한다.
-  Future<Result<void>> updatePreference({required PreferenceUpdateRequest request});
+  Future<Result<void>> updatePreference({
+    required PreferenceUpdateRequest request,
+  });
 }

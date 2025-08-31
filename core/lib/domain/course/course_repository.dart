@@ -9,6 +9,9 @@ abstract interface class CourseRepository {
   /// 현재 진행 중인 코스
   Future<Result<CurrentCourceEntity?>> getCurrentCourse();
 
+  /// 오늘의 코스 목록
+  Future<Result<void>> getTodaysCourses({required page, required size});
+
   /// 추천 코스 목록
   Future<Result<List<RecommendedCourseEntity>>> getRecommendedCourses({
     required page,

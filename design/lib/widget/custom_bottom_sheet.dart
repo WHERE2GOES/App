@@ -11,6 +11,7 @@ class CustomBottomSheet extends StatefulWidget {
     this.maxHeight,
     this.minHeight,
     this.initialHeight,
+    this.showDragHandle = true,
     this.onHeightChanged,
   });
 
@@ -18,6 +19,7 @@ class CustomBottomSheet extends StatefulWidget {
   final double? maxHeight;
   final double? minHeight;
   final double? initialHeight;
+  final bool showDragHandle;
   final void Function(double height)? onHeightChanged;
 
   @override
@@ -54,26 +56,27 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
       ),
       child: Column(
         children: [
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onScaleStart: _onDragStarted,
-            onScaleUpdate: _onDragUpdated,
-            onScaleEnd: _onDragEnded,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(13),
-                  child: Container(
-                    color: ThemeColors.pastelYellow,
-                    height: 3.62,
-                    constraints: const BoxConstraints(maxWidth: 44.57),
-                    child: SizedBox.expand(),
+          if (widget.showDragHandle)
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onScaleStart: _onDragStarted,
+              onScaleUpdate: _onDragUpdated,
+              onScaleEnd: _onDragEnded,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(13),
+                    child: Container(
+                      color: ThemeColors.pastelYellow,
+                      height: 3.62,
+                      constraints: const BoxConstraints(maxWidth: 44.57),
+                      child: SizedBox.expand(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           Expanded(child: widget.child),
         ],
       ),

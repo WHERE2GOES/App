@@ -91,7 +91,12 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(5),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 14),
+              padding: const EdgeInsets.only(
+                left: 11,
+                right: 11,
+                top: 14,
+                bottom: 10,
+              ),
               child: Column(
                 spacing: 10,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 7.8,
-                      vertical: 3,
+                      vertical: 2.5,
                     ),
                     decoration: BoxDecoration(
                       color: ThemeColors.highlightedRed,

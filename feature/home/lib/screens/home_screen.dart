@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final bannerImage = widget.bannerImage;
-    final fitCourse = widget.fitCourse;
 
     return Container(
       width: double.infinity,
@@ -60,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: _buildFitCourseCard(),
               ),
-            const SizedBox.shrink(),
+            SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
           ],
         ),
       ),

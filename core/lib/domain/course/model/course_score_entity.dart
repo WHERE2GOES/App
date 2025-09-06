@@ -4,6 +4,6 @@ part 'course_score_entity.freezed.dart';
 
 @freezed
 abstract class CourseScoreEntity with _$CourseScoreEntity {
-  const factory CourseScoreEntity({required String name, required int score}) =
+  const factory CourseScoreEntity({required String name, required double score}) =
       _CourseScoreEntity;
 }

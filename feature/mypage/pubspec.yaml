@@ -11,10 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  core:
+    path: ../../core
   design:
     path: ../../design
-  di:
-    path: ../../di
 
   get_it: ^8.0.3
 

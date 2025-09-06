@@ -12,7 +12,7 @@ abstract class CourseInfoEntity with _$CourseInfoEntity {
     required String courseName,
     required String regionName,
     required String description,
-    required Future<Uint8List> bannerImage,
+    required Future<Uint8List?> bannerImage,
     required Iterable<CourseScoreEntity> scores,
   }) = _CourseInfoEntity;
 }

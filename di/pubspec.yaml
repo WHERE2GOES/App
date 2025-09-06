@@ -13,6 +13,14 @@ dependencies:
 
   data:
     path: ../data
+  home:
+    path: ../feature/home
+  login:
+    path: ../feature/login
+  navigation:
+    path: ../feature/navigation
+  mypage:
+    path: ../feature/mypage
 
 dev_dependencies:
   flutter_lints: ^5.0.0

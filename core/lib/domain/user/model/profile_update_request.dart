@@ -8,6 +8,6 @@ part 'profile_update_request.freezed.dart';
 abstract class ProfileUpdateRequest with _$ProfileUpdateRequest {
   const factory ProfileUpdateRequest({
     required String nickname,
-    required Uint8List? profileImage,
+    required Future<Uint8List?>? profileImage,
   }) = _ProfileUpdateRequest;
 }

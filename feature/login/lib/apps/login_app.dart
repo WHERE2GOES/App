@@ -2,8 +2,8 @@ import 'package:core/common/result.dart';
 import 'package:core/domain/auth/auth_repository.dart';
 import 'package:core/domain/auth/model/auth_provider.dart';
 import 'package:core/domain/auth/model/auth_token_type.dart';
-import 'package:di/di.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:login/screens/login_screen.dart';
@@ -18,7 +18,7 @@ class LoginApp extends StatefulWidget {
 }
 
 class _LoginAppState extends State<LoginApp> {
-  final _authRepository = locator.get<AuthRepository>();
+  final _authRepository = GetIt.I<AuthRepository>();
 
   @override
   Widget build(BuildContext context) {

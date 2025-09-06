@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:core/utils/has_final_consonant.dart';
 import 'package:design/theme/theme_colors.dart';
 import 'package:design/widget/custom_bottom_sheet.dart';
+import 'package:design/widget/future_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:home/models/course_score.dart';
@@ -22,7 +23,7 @@ class HomeCourseDetailScreen extends StatefulWidget {
     required this.onSubmitButtonClicked,
   });
 
-  final Uint8List? bannerImage;
+  final Future<Uint8List?>? bannerImage;
   final String courseName;
   final String? courseDescription;
   final CourseScore? courseScore;
@@ -46,7 +47,8 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
         physics: const ClampingScrollPhysics(),
         child: Column(
           children: [
-            if (bannerImage != null) Image.memory(bannerImage),
+            if (bannerImage != null)
+              FutureImage(imageFuture: bannerImage, width: double.infinity),
             const SizedBox(height: 33),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -239,8 +241,8 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                         color: Colors.white,
                       ),
                       child: image != null
-                          ? Image.memory(
-                              image,
+                          ? FutureImage(
+                              imageFuture: image,
                               width: 115,
                               height: 115,
                               fit: BoxFit.cover,

@@ -26,7 +26,7 @@ class _TestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: HomeCourseDetailScreen(
-        bannerImage: bannerImage,
+        bannerImage: Future.value(bannerImage),
         courseName: '용산',
         courseDescription: "용산은 남산타워가 보이고 맛집이 많은 곳!",
         courseScore: (
@@ -49,9 +49,9 @@ class _TestApp extends StatelessWidget {
               ),
             ),
             spots: [
-              CourseSpot(name: "", address: "", image: null),
-              CourseSpot(name: "", address: "", image: null),
-              CourseSpot(name: "", address: "", image: null),
+              CourseSpot(name: "", image: Future.value(null)),
+              CourseSpot(name: "", image: Future.value(null)),
+              CourseSpot(name: "", image: Future.value(null)),
             ],
           ),
           (
@@ -66,13 +66,12 @@ class _TestApp extends StatelessWidget {
               ),
             ),
             spots: [
-              CourseSpot(name: "", address: "", image: null),
-              CourseSpot(name: "", address: "", image: null),
-              CourseSpot(name: "", address: "", image: null),
+              CourseSpot(name: "", image: Future.value(null)),
+              CourseSpot(name: "", image: Future.value(null)),
+              CourseSpot(name: "", image: Future.value(null)),
             ],
           ),
           (
-            
             title: RichText(
               text: TextSpan(
                 children: [
@@ -84,9 +83,9 @@ class _TestApp extends StatelessWidget {
               ),
             ),
             spots: [
-              CourseSpot(name: "", address: "", image: null),
-              CourseSpot(name: "", address: "", image: null),
-              CourseSpot(name: "", address: "", image: null),
+              CourseSpot(name: "", image: Future.value(null)),
+              CourseSpot(name: "", image: Future.value(null)),
+              CourseSpot(name: "", image: Future.value(null)),
             ],
           ),
         ],

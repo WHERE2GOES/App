@@ -7,7 +7,6 @@ part 'course_spot.freezed.dart';
 abstract class CourseSpot with _$CourseSpot {
   const factory CourseSpot({
     required String name,
-    required String address,
-    required Uint8List? image,
+    required Future<Uint8List?> image,
   }) = _CourseSpot;
 }

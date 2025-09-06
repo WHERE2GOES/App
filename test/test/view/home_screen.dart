@@ -41,18 +41,22 @@ class _TestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: HomeScreen(
-        bannerImage: bannerImage,
+        bannerImage: Future.value(bannerImage),
         courseInProgressCard: (onClicked: () {}),
         recommendedCourses: List.generate(
           30,
           (index) => (
-            image: null,
+            image: Future.value(null),
             placeName: "용산",
             onClicked: () {},
             onRendered: () => logger.d("Rendered! index: $index"),
           ),
         ),
-        fitCourse: (image: fitCourseImage, typeName: "용산", onClicked: () {}),
+        fitCourse: (
+          image: Future.value(fitCourseImage),
+          typeName: "용산",
+          onClicked: () {},
+        ),
       ),
     );
   }

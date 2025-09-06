@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:design/theme/theme_colors.dart';
+import 'package:design/widget/future_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -13,18 +14,18 @@ class HomeScreen extends StatefulWidget {
     required this.fitCourse,
   });
 
-  final Uint8List? bannerImage;
+  final Future<Uint8List?>? bannerImage;
   final ({VoidCallback onClicked})? courseInProgressCard;
   final List<
     ({
-      Uint8List? image,
+      Future<Uint8List?> image,
       String placeName,
       VoidCallback onClicked,
       VoidCallback? onRendered,
     })
   >?
   recommendedCourses;
-  final ({Uint8List? image, String typeName, VoidCallback onClicked})?
+  final ({Future<Uint8List?> image, String typeName, VoidCallback onClicked})?
   fitCourse;
 
   @override
@@ -45,8 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           spacing: 38,
           children: [
-            if (bannerImage != null)
-              Image.memory(bannerImage, width: double.infinity),
+            if (bannerImage != null) FutureImage(
+              imageFuture: bannerImage,
+              width: double.infinity,
+              height: 120,
+              fit: BoxFit.cover,
+            ),
             if (widget.courseInProgressCard != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -201,14 +206,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           color: Colors.white,
                         ),
-                        child: image != null
-                            ? Image.memory(
-                                image,
-                                width: 96.34,
-                                height: 96.34,
-                                fit: BoxFit.cover,
-                              )
-                            : null,
+                        child: FutureImage(
+                          imageFuture: image,
+                          width: 125.17,
+                          height: 96.34,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     );
                   },
@@ -247,9 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
               border: Border.all(width: 0.6, color: ThemeColors.grey800),
               borderRadius: BorderRadius.circular(5),
             ),
-            child: image != null
-                ? Image.memory(image, width: double.infinity)
-                : null,
+            child: image != null ? FutureImage(imageFuture: image) : null,
           ),
         ),
       ],

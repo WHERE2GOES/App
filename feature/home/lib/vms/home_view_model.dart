@@ -24,7 +24,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<Uint8List?>? bannerImage;
   List<RecommendedCourseEntity>? recommendedCourses;
   FittedCourseEntity? fittedCourse;
-  int? _selectedCourseId;
+  dynamic _selectedCourseId;
   CourseInfoEntity? courseInfo;
   List<CoursePropertyEntity>? foodSpots;
   List<CoursePropertyEntity>? photoSpotSpots;
@@ -75,7 +75,7 @@ class HomeViewModel extends ChangeNotifier {
     ], eagerError: false);
   }
 
-  Future<void> selectCourse({required int courseId}) async {
+  Future<void> selectCourse({required dynamic courseId}) async {
     _selectedCourseId = courseId;
     courseInfo = null;
     notifyListeners();

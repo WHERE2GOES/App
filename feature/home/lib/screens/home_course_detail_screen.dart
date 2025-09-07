@@ -43,38 +43,49 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
 
     return Container(
       color: ThemeColors.sparseYellow,
-      child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Column(
-          children: [
-            if (bannerImage != null)
-              FutureImage(imageFuture: bannerImage, width: double.infinity),
-            const SizedBox(height: 33),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: _buildCourseSummary(),
-            ),
-            const SizedBox(height: 75),
-            _buildCourseScoreGraph(),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                final spotCategory = spotCategories[index];
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              children: [
+                if (bannerImage != null)
+                  FutureImage(imageFuture: bannerImage, width: double.infinity),
+                const SizedBox(height: 33),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _buildCourseSummary(),
+                ),
+                const SizedBox(height: 75),
+                _buildCourseScoreGraph(),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    final spotCategory = spotCategories[index];
 
-                return _buildSpotCategoryList(
-                  key: ValueKey(spotCategory.title),
-                  title: spotCategory.title,
-                  spots: spotCategory.spots,
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const SizedBox(height: 37),
-              itemCount: spotCategories.length,
+                    return _buildSpotCategoryList(
+                      key: ValueKey(spotCategory.title),
+                      title: spotCategory.title,
+                      spots: spotCategory.spots,
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const SizedBox(height: 37),
+                  itemCount: spotCategories.length,
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-            _buildSubmitButtonBar(),
-          ],
-        ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _buildSubmitButtonBar(),
+          ),
+        ],
       ),
     );
   }

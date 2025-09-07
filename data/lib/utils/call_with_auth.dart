@@ -1,31 +1,31 @@
 import 'package:data/sources/local/auth_preference.dart';
-import 'package:data/sources/server/services/server_api_service.dart';
 import 'package:core/common/exception/not_logged_in_exception.dart';
 import 'package:dio/dio.dart';
+import 'package:openapi/openapi.dart';
 
-Future<T> callWithAuth<T>({
-  required AuthPreference authPreference,
-  required ServerApiService serverApiService,
-  required Future<T> Function(String aceessToken) action,
-}) async {
-  try {
-    final accessToken = await authPreference.accessToken;
-    if (accessToken == null) throw NotLoggedInException();
+extension OpenapiExtensions on AuthPreference {
+  Future<T> callWithAuth<T>({
+    required Openapi openapi,
+    required Future<T> Function(String aceessToken) action,
+  }) async {
+    try {
+      final t = await accessToken;
+      if (t == null) throw NotLoggedInException();
+      return await action(t);
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 401) rethrow;
 
-    return await action(accessToken);
-  } on DioException catch (e) {
-    if (e.response?.statusCode != 401) rethrow;
+      final rt = await refreshToken;
+      if (rt == null) throw Exception("No refresh token found");
 
-    final refreshToken = await authPreference.refreshToken;
-    if (refreshToken == null) throw Exception("No refresh token found");
+      final response = await openapi.getTokenControllerApi().makeNewToken(
+        body: rt,
+      );
 
-    final response = await serverApiService.refreshToken(
-      refreshToken: refreshToken,
-    );
+      setRefreshToken(response.data!.data!.refreshToken!);
+      setAccessToken(response.data!.data!.accessToken!);
 
-    await authPreference.setRefreshToken(response.refreshToken);
-    await authPreference.setAccessToken(response.accessToken);
-
-    return await action(response.accessToken);
+      return await action(response.data!.data!.accessToken!);
+    }
   }
 }

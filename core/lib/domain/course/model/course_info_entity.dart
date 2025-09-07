@@ -8,7 +8,7 @@ part 'course_info_entity.freezed.dart';
 @freezed
 abstract class CourseInfoEntity with _$CourseInfoEntity {
   const factory CourseInfoEntity({
-    required int id,
+    required dynamic id,
     required String courseName,
     required String regionName,
     required String description,

@@ -7,13 +7,16 @@ import 'package:data/sources/server/exceptions/user_register_pending_exception.d
 import 'package:data/sources/server/services/server_api_service.dart';
 import 'package:data/utils/call_with_auth.dart';
 import 'package:injectable/injectable.dart';
+import 'package:openapi/openapi.dart';
 
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
+  final Openapi openapi;
   final AuthPreference authPreference;
   final ServerApiService serverApiService;
 
   const AuthRepositoryImpl({
+    required this.openapi,
     required this.authPreference,
     required this.serverApiService,
   });
@@ -81,11 +84,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<void>> logout() async {
     try {
-      await callWithAuth(
-        authPreference: authPreference,
-        serverApiService: serverApiService,
+      await authPreference.callWithAuth(
+        openapi: openapi,
         action: (accessToken) async {
-          await serverApiService.logout(accessToken: accessToken);
+          return await serverApiService.logout(accessToken: accessToken);
         },
       );
 

@@ -183,7 +183,7 @@ class _HomeAppState extends State<HomeApp> {
     }
   }
 
-  void _onCourseClicked({required int courseId}) {
+  void _onCourseClicked({required dynamic courseId}) {
     widget.vm.selectCourse(courseId: courseId);
     _navigatorKey.currentState
         ?.pushNamed('/course')

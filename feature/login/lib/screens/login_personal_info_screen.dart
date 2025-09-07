@@ -32,90 +32,132 @@ class _LoginPersonalInfoScreenState extends State<LoginPersonalInfoScreen> {
   @override
   Widget build(BuildContext context) {
     final errorMessage = widget.errorMessage;
+    final onClearNicknameButtonClicked = widget.onClearNicknameButtonClicked;
 
     return Container(
       width: double.infinity,
       height: double.infinity,
       color: ThemeColors.pastelYellow,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              spacing: 12.87,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: ThemeColors.grey800, width: 0.6),
-                    borderRadius: BorderRadius.circular(5),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                spacing: 12.87,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(22),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: ThemeColors.grey800, width: 0.6),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "프로필을 설정해주세요",
+                          style: TextStyle(
+                            fontSize: 23,
+                            fontWeight: FontWeight.w600,
+                            color: ThemeColors.grey800,
+                          ),
+                        ),
+                        Text(
+                          "프로필을 설정해면 서비스를 더욱 재밌게 즐길 수 있어요!",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: ThemeColors.grey800.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        Stack(children: []),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Column(
+                    spacing: 5,
                     children: [
-                      Text(
-                        "프로필을 설정해주세요",
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w600,
-                          color: ThemeColors.grey800,
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(22),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: ThemeColors.grey800,
+                            width: 0.6,
+                          ),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: widget.nicknameController,
+                                style: TextStyle(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.w600,
+                                  color: ThemeColors.grey800,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            if (onClearNicknameButtonClicked != null)
+                              GestureDetector(
+                                onTap: onClearNicknameButtonClicked,
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Center(child: Text("X")),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      Text(
-                        "프로필을 설정해면 서비스를 더욱 재밌게 즐길 수 있어요!",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          color: ThemeColors.grey800.withValues(alpha: 0.4),
+                      if (errorMessage != null)
+                        Text(
+                          errorMessage,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      Stack(children: []),
                     ],
                   ),
-                ),
-                Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(22),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: ThemeColors.grey800,
-                          width: 0.6,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: TextField(
-                        controller: widget.nicknameController,
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w600,
-                          color: ThemeColors.grey800,
-                        ),
-                      )
-                    ),
-                    if (errorMessage != null)
+                ],
+              ),
+              GestureDetector(
+                onTap: widget.onSelectPictureButtonClicked,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Text(
-                        errorMessage,
+                        "시작하기",
                         style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.red,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
-                  ],
+                    ],
+                  )
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          GestureDetector(
-            onTap: widget.onSelectPictureButtonClicked,
-            child: Container(),
-          ),
-        ],
+        ),
       ),
     );
   }

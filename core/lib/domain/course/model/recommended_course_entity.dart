@@ -7,7 +7,7 @@ part 'recommended_course_entity.freezed.dart';
 @freezed
 abstract class RecommendedCourseEntity with _$RecommendedCourseEntity {
   const factory RecommendedCourseEntity({
-    required dynamic id,
+    required int id,
     required String name,
     required Future<Uint8List?> image,
   }) = _RecommendedCourseEntity;

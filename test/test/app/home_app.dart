@@ -15,6 +15,7 @@ void main() async {
         body: HomeApp(
           vm: GetIt.I<HomeViewModel>(),
           onCurrentCourseCardClicked: () {},
+          onCourseStarted: () {},
         ),
       ),
     ),

@@ -20,18 +20,18 @@ abstract interface class CourseRepository {
   Future<Result<FittedCourseEntity>> getFittedCourses();
 
   /// 특정 코스의 정보
-  Future<Result<CourseInfoEntity>> getCourseInfo({required dynamic courseId});
+  Future<Result<CourseInfoEntity>> getCourseInfo({required int courseId});
 
   /// 특정 코스의 특성 정보
   Future<Result<List<CoursePropertyEntity>>> getCourseProperties({
-    required dynamic courseId,
+    required int courseId,
     required CoursePropertyType type,
     required int page,
     required int size,
   });
 
   /// 코스 시작
-  Future<Result<void>> startCourse({required dynamic courseId});
+  Future<Result<void>> startCourse({required int courseId});
 
   /// 코스 종료
   Future<Result<void>> endCourse();

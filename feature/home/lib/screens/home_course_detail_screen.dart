@@ -75,7 +75,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                       const SizedBox(height: 37),
                   itemCount: spotCategories.length,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 200),
               ],
             ),
           ),
@@ -332,6 +332,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                   ),
                 ),
                 GestureDetector(
+                  onTap: widget.onSubmitButtonClicked,
                   child: Container(
                     width: double.infinity,
                     height: 37.24,

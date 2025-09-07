@@ -24,7 +24,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<Uint8List?>? bannerImage;
   List<RecommendedCourseEntity>? recommendedCourses;
   FittedCourseEntity? fittedCourse;
-  dynamic _selectedCourseId;
+  int? _selectedCourseId;
   CourseInfoEntity? courseInfo;
   List<CoursePropertyEntity>? foodSpots;
   List<CoursePropertyEntity>? photoSpotSpots;
@@ -75,12 +75,15 @@ class HomeViewModel extends ChangeNotifier {
     ], eagerError: false);
   }
 
-  Future<void> selectCourse({required dynamic courseId}) async {
+  Future<void> selectCourse({required int courseId}) async {
     _selectedCourseId = courseId;
     courseInfo = null;
     notifyListeners();
 
     loadCourseInfo();
+    loadCourseProperties(page: 0, size: 5, type: CoursePropertyType.food);
+    loadCourseProperties(page: 0, size: 5, type: CoursePropertyType.photoSpot);
+    loadCourseProperties(page: 0, size: 5, type: CoursePropertyType.activity);
   }
 
   Future<void> unselectCourse() async {
@@ -152,5 +155,12 @@ class HomeViewModel extends ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  Future<bool> startCourse() async {
+    final courseId = _selectedCourseId;
+    if (courseId == null) return false;
+    final result = await courseRepository.startCourse(courseId: courseId);
+    return result is Success<void>;
   }
 }

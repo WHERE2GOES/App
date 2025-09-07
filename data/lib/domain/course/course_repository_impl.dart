@@ -25,7 +25,7 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<Result<CourseInfoEntity>> getCourseInfo({
-    required dynamic courseId,
+    required int courseId,
   }) async {
     try {
       final data = await authPreference.callWithAuth(
@@ -34,7 +34,7 @@ class CourseRepositoryImpl implements CourseRepository {
           final api = openapi.getGPTAPIApi();
           final response = await api.getFullDetail(
             headers: {"Authorization": "Bearer $accessToken"},
-            courseId: courseId,
+            courseId: courseId.toString(),
           );
           return response.data!.data!;
         },
@@ -48,7 +48,7 @@ class CourseRepositoryImpl implements CourseRepository {
           description: data.aiSummary!,
           bannerImage: getFutureFromImageUrl(data.imageUrl!),
           scores: data.weights!.entries.map((e) {
-            return CourseScoreEntity(name: "", score: 0.0);
+            return CourseScoreEntity(name: e.key, score: e.value);
           }),
         ),
       );
@@ -59,7 +59,7 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<Result<List<CoursePropertyEntity>>> getCourseProperties({
-    required dynamic courseId,
+    required int courseId,
     required CoursePropertyType type,
     required int page,
     required int size,
@@ -182,7 +182,7 @@ class CourseRepositoryImpl implements CourseRepository {
         data: data!
             .map(
               (e) => RecommendedCourseEntity(
-                id: e.courseId!,
+                id: int.parse(e.courseId!),
                 name: e.name!,
                 image: getFutureFromImageUrl(e.imageUrl!),
               ),
@@ -195,14 +195,17 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Future<Result<void>> startCourse({required dynamic courseId}) async {
+  Future<Result<void>> startCourse({required int courseId}) async {
     try {
       final isSucceed = await authPreference.callWithAuth(
         openapi: openapi,
         action: (accessToken) async {
           final api = openapi.getCourseControllerApi();
           final req = CourseStartReq((b) => b..courseId = courseId);
-          final response = await api.startCourse(courseStartReq: req);
+          final response = await api.startCourse(
+            courseStartReq: req,
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
           return response.statusCode == 200;
         },
       );

@@ -12,10 +12,12 @@ class HomeApp extends StatefulWidget {
     super.key,
     required this.vm,
     required this.onCurrentCourseCardClicked,
+    required this.onCourseStarted,
   });
 
   final HomeViewModel vm;
   final VoidCallback onCurrentCourseCardClicked;
+  final VoidCallback onCourseStarted;
 
   @override
   State<StatefulWidget> createState() => _HomeAppState();
@@ -24,7 +26,7 @@ class HomeApp extends StatefulWidget {
 class _HomeAppState extends State<HomeApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
-  @override 
+  @override
   void initState() {
     super.initState();
     widget.vm.loadAll();
@@ -100,7 +102,7 @@ class _HomeAppState extends State<HomeApp> {
       courseScore: scores != null
           ? (
               culture:
-                  scores.firstWhereOrNull((e) => e.name == 'culture')?.score ??
+                  scores.firstWhereOrNull((e) => e.name == 'activity')?.score ??
                   0.0,
               difficulty:
                   scores
@@ -191,6 +193,8 @@ class _HomeAppState extends State<HomeApp> {
   }
 
   void _onCourseSubmitted() {
-    // TODO: 코스 승인 기능 추가
+    widget.vm.startCourse().then((isSucceed) {
+      if (isSucceed) widget.onCourseStarted();
+    });
   }
 }

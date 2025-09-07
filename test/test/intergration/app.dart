@@ -16,7 +16,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
   String kakaoAppKey = dotenv.env["KAKAO_APP_KEY"]!;
   String googleServerClientId = dotenv.env["GOOGLE_SERVER_CLIENT_ID"]!;
-  
+
   KakaoSdk.init(nativeAppKey: kakaoAppKey);
   await GoogleSignIn.instance.initialize(serverClientId: googleServerClientId);
 
@@ -38,17 +38,18 @@ void main() async {
           onCurrentCourseCardClicked: () {
             context.go("/navigation");
           },
+          onCourseStarted: () {
+            context.go("/navigation");
+          },
         ),
-        routes: [
-          GoRoute(
-            path: '/navigation',
-            builder: (context, state) {
-              final latlngs = state.uri.queryParameters["latlngs"];
+      ),
+      GoRoute(
+        path: '/navigation',
+        builder: (context, state) {
+          final latlngs = state.uri.queryParameters["latlngs"];
 
-              return NavigationApp(initialCoursePositionString: latlngs);
-            },
-          ),
-        ],
+          return NavigationApp(initialCoursePositionString: latlngs);
+        },
       ),
     ],
   );

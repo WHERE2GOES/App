@@ -8,7 +8,8 @@ part 'course_property_entity.freezed.dart';
 @freezed
 abstract class CoursePropertyEntity with _$CoursePropertyEntity {
   const factory CoursePropertyEntity({
-    required Future<Uint8List> image,
+    required Future<Uint8List?> image,
+    required String name,
     required CoursePropertyType type,
   }) = _CoursePropertyEntity;
 }

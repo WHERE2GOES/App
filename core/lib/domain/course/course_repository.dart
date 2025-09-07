@@ -2,21 +2,22 @@ import 'package:core/common/result.dart';
 import 'package:core/domain/course/model/course_info_entity.dart';
 import 'package:core/domain/course/model/course_property_entity.dart';
 import 'package:core/domain/course/model/course_property_type.dart';
-import 'package:core/domain/course/model/current_cource_entity.dart';
+import 'package:core/domain/course/model/current_course_entity.dart';
+import 'package:core/domain/course/model/fitted_course_entity.dart';
 import 'package:core/domain/course/model/recommended_course_entity.dart';
 
 abstract interface class CourseRepository {
   /// 현재 진행 중인 코스
-  Future<Result<CurrentCourceEntity?>> getCurrentCourse();
-
-  /// 오늘의 코스 목록
-  Future<Result<void>> getTodaysCourses({required page, required size});
+  Future<Result<CurrentCourseEntity?>> getCurrentCourse();
 
   /// 추천 코스 목록
   Future<Result<List<RecommendedCourseEntity>>> getRecommendedCourses({
     required page,
     required size,
   });
+
+  /// 추천 코스 목록 (개인 맞춤형)
+  Future<Result<FittedCourseEntity>> getFittedCourses();
 
   /// 특정 코스의 정보
   Future<Result<CourseInfoEntity>> getCourseInfo({required int courseId});

@@ -96,6 +96,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  dashed_path:
+    dependency: transitive
+    description:
+      name: dashed_path
+      sha256: "711cb86eb57e023e8ad9199ea717eaf0be0906743a884c261fbe2711dc12fe9d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   data:
     dependency: "direct main"
     description:
@@ -357,7 +365,7 @@ packages:
     source: hosted
     version: "0.2.5"
   get_it:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: get_it
       sha256: f126a3e286b7f5b578bf436d5592968706c4c1de28a228b870ce375d9f743103
@@ -381,7 +389,7 @@ packages:
     source: hosted
     version: "0.3.3+1"
   google_sign_in:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: google_sign_in
       sha256: "939a8b58f84c4053811b8c1bc9adbcb59449a15b37958264bbf60020698cca0e"
@@ -455,10 +463,10 @@ packages:
     dependency: transitive
     description:
       name: injectable
-      sha256: "5e1556ea1d374fe44cbe846414d9bab346285d3d8a1da5877c01ad0774006068"
+      sha256: "1b86fab6a98c11a97e5c718afb00e628d47d183c2a2256392e995a4c561141c1"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.0"
+    version: "2.5.1"
   js:
     dependency: transitive
     description:

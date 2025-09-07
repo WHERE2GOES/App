@@ -1,16 +1,17 @@
-import 'package:di/di.dart';
 import 'package:data/sources/tmap/services/tmap_api_service.dart';
+import 'package:di/configure_all_dependencies.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 import 'package:logger/web.dart';
 
 void main() async {
-  configureDependencies();
+  await configureAllDependencies();
 
   await dotenv.load(fileName: ".env");
   String apiKey = dotenv.env["TMAP_API_KEY"]!;
 
   final logger = Logger(printer: PrettyPrinter());
-  final tmapApiService = locator.get<TmapApiService>();
+  final tmapApiService = GetIt.I<TmapApiService>();
 
   // 숭실대입구역 (경도: 126.9535, 위도: 37.4965)
   const double startX = 126.9535;

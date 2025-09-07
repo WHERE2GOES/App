@@ -9,6 +9,6 @@ abstract class UserEntity with _$UserEntity {
   const factory UserEntity({
     required String nickname,
     required String email,
-    required Future<Uint8List>? profileImage,
+    required Future<Uint8List?>? profileImage,
   }) = _UserEntity;
 }

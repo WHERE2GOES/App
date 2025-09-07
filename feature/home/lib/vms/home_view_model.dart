@@ -72,7 +72,7 @@ class HomeViewModel extends ChangeNotifier {
       loadBannerImage(),
       loadRecommendedCourses(),
       loadFittedCourse(),
-    ]);
+    ], eagerError: false);
   }
 
   Future<void> selectCourse({required int courseId}) async {

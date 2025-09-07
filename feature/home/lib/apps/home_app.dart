@@ -24,6 +24,12 @@ class HomeApp extends StatefulWidget {
 class _HomeAppState extends State<HomeApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
+  @override 
+  void initState() {
+    super.initState();
+    widget.vm.loadAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Navigator(

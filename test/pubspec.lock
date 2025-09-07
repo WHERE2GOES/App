@@ -629,7 +629,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: bac7642f1b2039b1e458ef4da533814a1be06143
+      resolved-ref: "71de821881d7ef74de2e3207adc5306b5013d49f"
       url: "https://github.com/WHERE2GOES/Dart-Client"
     source: git
     version: "1.0.0"

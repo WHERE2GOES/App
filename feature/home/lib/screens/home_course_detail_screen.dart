@@ -152,49 +152,58 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
             ],
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 6,
             children: [
-              Text(
-                "Ask",
-                style: TextStyle(
-                  color: ThemeColors.grey800,
-                  fontSize: 12,
-                  letterSpacing: -0.2,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              SizedBox(
-                width: 23.31,
-                height: 3,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 0.5,
-                      decoration: BoxDecoration(color: ThemeColors.grey800),
+              Row(
+                spacing: 6,
+                children: [
+                  Text(
+                    "Ask",
+                    style: TextStyle(
+                      color: ThemeColors.grey800,
+                      fontSize: 12,
+                      letterSpacing: -0.2,
+                      fontWeight: FontWeight.w300,
                     ),
-                    Positioned(
-                      right: 0,
-                      child: Container(
-                        width: 3,
-                        height: 3,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(
-                          color: ThemeColors.grey800,
-                          borderRadius: BorderRadius.circular(999),
+                  ),
+                  SizedBox(
+                    width: 23.31,
+                    height: 3,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 0.5,
+                          decoration: BoxDecoration(color: ThemeColors.grey800),
                         ),
-                      ),
+                        Positioned(
+                          right: 0,
+                          child: Container(
+                            width: 3,
+                            height: 3,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              color: ThemeColors.grey800,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Text(
-                widget.courseDescription ?? "",
-                style: TextStyle(
-                  color: ThemeColors.grey800,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
+              Expanded(
+                child: Text(
+                  widget.courseDescription ?? "",
+                  style: TextStyle(
+                    color: ThemeColors.grey800,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w300,
+                  ),
+                  maxLines: null,
                 ),
               ),
             ],

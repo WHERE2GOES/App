@@ -24,12 +24,6 @@ class CourseRepositoryImpl implements CourseRepository {
   });
 
   @override
-  Future<Result<void>> endCourse() {
-    // TODO: implement endCourse
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Result<CourseInfoEntity>> getCourseInfo({
     required dynamic courseId,
   }) async {
@@ -40,7 +34,7 @@ class CourseRepositoryImpl implements CourseRepository {
           final api = openapi.getGPTAPIApi();
           final response = await api.getFullDetail(
             headers: {"Authorization": "Bearer $accessToken"},
-            name: courseId,
+            courseId: courseId,
           );
           return response.data!.data!;
         },
@@ -48,7 +42,7 @@ class CourseRepositoryImpl implements CourseRepository {
 
       return Success(
         data: CourseInfoEntity(
-          id: data.name!,
+          id: courseId,
           courseName: data.name!,
           regionName: "",
           description: data.aiSummary!,
@@ -71,7 +65,11 @@ class CourseRepositoryImpl implements CourseRepository {
     required int size,
   }) async {
     try {
-      final areaName = "";
+      final courseInfo = await getCourseInfo(courseId: courseId);
+
+      if (courseInfo is! Success<CourseInfoEntity>) {
+        return Failure(exception: Exception("코스 데이터를 불러오는 도중 오류가 발생했습니다."));
+      }
 
       final success = await authPreference.callWithAuth(
         openapi: openapi,
@@ -82,7 +80,7 @@ class CourseRepositoryImpl implements CourseRepository {
             case CoursePropertyType.food:
               final response = await api.getFood(
                 headers: {"Authorization": "Bearer $accessToken"},
-                areaName: areaName,
+                areaName: courseInfo.data.regionName,
               );
 
               return Success(
@@ -98,13 +96,13 @@ class CourseRepositoryImpl implements CourseRepository {
             case CoursePropertyType.activity:
               final festivals = await api.getFestivals(
                 headers: {"Authorization": "Bearer $accessToken"},
-                areaName: areaName,
+                areaName: courseInfo.data.regionName,
                 startDate: Date.now().toString(),
               );
 
               final plays = await api.getPlay(
                 headers: {"Authorization": "Bearer $accessToken"},
-                areaName: areaName,
+                areaName: courseInfo.data.regionName,
               );
 
               return Success(
@@ -129,7 +127,7 @@ class CourseRepositoryImpl implements CourseRepository {
             case CoursePropertyType.photoSpot:
               final response = await api.getPhoto(
                 headers: {"Authorization": "Bearer $accessToken"},
-                areaName: areaName,
+                areaName: courseInfo.data.regionName,
               );
 
               return Success(
@@ -152,15 +150,15 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Future<Result<CurrentCourseEntity?>> getCurrentCourse() {
+  Future<Result<CurrentCourseEntity?>> getCurrentCourse() async {
     // TODO: implement getCurrentCourse
-    throw UnimplementedError();
+    return Failure(exception: Exception());
   }
 
   @override
-  Future<Result<FittedCourseEntity>> getFittedCourses() {
+  Future<Result<FittedCourseEntity>> getFittedCourses() async {
     // TODO: implement getFittedCourses
-    throw UnimplementedError();
+    return Failure(exception: Exception());
   }
 
   @override
@@ -184,7 +182,7 @@ class CourseRepositoryImpl implements CourseRepository {
         data: data!
             .map(
               (e) => RecommendedCourseEntity(
-                id: e.name!,
+                id: e.courseId!,
                 name: e.name!,
                 image: getFutureFromImageUrl(e.imageUrl!),
               ),
@@ -197,8 +195,42 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Future<Result<void>> startCourse({required dynamic courseId}) {
-    // TODO: implement startCourse
-    throw UnimplementedError();
+  Future<Result<void>> startCourse({required dynamic courseId}) async {
+    try {
+      final isSucceed = await authPreference.callWithAuth(
+        openapi: openapi,
+        action: (accessToken) async {
+          final api = openapi.getCourseControllerApi();
+          final req = CourseStartReq((b) => b..courseId = courseId);
+          final response = await api.startCourse(courseStartReq: req);
+          return response.statusCode == 200;
+        },
+      );
+
+      if (!isSucceed) throw Exception("코스가 시작되지 않았습니다.");
+      return Success(data: null);
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
+  }
+
+  @override
+  Future<Result<void>> endCourse() async {
+    try {
+      final isSucceed = await authPreference.callWithAuth(
+        openapi: openapi,
+        action: (accessToken) async {
+          final api = openapi.getCourseControllerApi();
+          final req = CourseEndReq((b) => b..courseId);
+          final response = await api.endCourse(courseEndReq: req);
+          return response.statusCode == 200;
+        },
+      );
+
+      if (!isSucceed) throw Exception("코스를 끝내지 못했습니다.");
+      return Success(data: null);
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
   }
 }

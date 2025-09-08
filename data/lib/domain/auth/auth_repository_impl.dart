@@ -3,9 +3,8 @@ import 'package:core/domain/auth/auth_repository.dart';
 import 'package:core/domain/auth/model/auth_provider.dart';
 import 'package:core/domain/auth/model/auth_token_type.dart';
 import 'package:data/sources/local/auth_preference.dart';
-import 'package:data/sources/server/exceptions/user_register_pending_exception.dart';
-import 'package:data/sources/server/services/server_api_service.dart';
 import 'package:data/utils/call_with_auth.dart';
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:openapi/openapi.dart';
 
@@ -13,12 +12,10 @@ import 'package:openapi/openapi.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final Openapi openapi;
   final AuthPreference authPreference;
-  final ServerApiService serverApiService;
 
   const AuthRepositoryImpl({
     required this.openapi,
     required this.authPreference,
-    required this.serverApiService,
   });
 
   @override
@@ -51,45 +48,64 @@ class AuthRepositoryImpl implements AuthRepository {
     required String? idToken,
   }) async {
     try {
+      final request = LoginRequest((b) => b..accessToken = accessToken);
+      final api = openapi.getLoginAPIApi();
+
       final response = switch (authProvider) {
-        AuthProvider.kakao => await serverApiService.loginWithKakao(
-          token: accessToken,
-        ),
-
-        AuthProvider.google => await serverApiService.loginWithGoogle(
-          token: accessToken,
-        ),
-
-        _ => throw UnimplementedError("Unimplemented authorization provider."),
+        AuthProvider.kakao => await api.loginKakao(loginRequest: request),
+        AuthProvider.google => await api.loginGoogle(loginRequest: request),
+        _ => throw UnimplementedError(),
       };
 
-      await authPreference.setAccessToken(response.accessToken);
-      await authPreference.setRefreshToken(response.refreshToken);
+      final at = response.data?.data?.accessToken;
+      final rt = response.data?.data?.refreshToken;
+
+      if (at == null || rt == null) throw Exception("Login failed.");
+
+      await authPreference.setAccessToken(at);
+      await authPreference.setRefreshToken(rt);
       await authPreference.setPendingEmail(null);
       await authPreference.setPendingEmailDomain(null);
 
       return Success(data: true);
-    } on Exception catch (e) {
-      if (e is UserRegisterPendingException) {
-        await authPreference.setPendingEmail(e.email);
-        await authPreference.setPendingEmailDomain(e.domain);
+    } on DioException catch (e) {
+      // 사용자가 가입 절차를 완료하지 않음
+      if (e.response?.statusCode == 404) {
+        final email = e.response?.data?["data"]?["email"];
+        final domain = e.response?.data?["data"]?["domain"];
 
-        return Success(data: false);
-      } else {
-        return Failure(exception: e);
+        if (email is String && domain is String) {
+          await authPreference.setPendingEmail(email);
+          await authPreference.setPendingEmailDomain(domain);
+
+          return Success(data: false);
+        } else {
+          throw Exception("Login failed. No email returned");
+        }
       }
+
+      rethrow;
+    } on Exception catch (e) {
+      return Failure(exception: e);
     }
   }
 
   @override
   Future<Result<void>> logout() async {
     try {
-      await authPreference.callWithAuth(
-        openapi: openapi,
+      final isSucceed = await openapi.callWithAuth(
+        authPreference: authPreference,
         action: (accessToken) async {
-          return await serverApiService.logout(accessToken: accessToken);
+          final api = openapi.getLoginAPIApi();
+          final response = await api.logout(
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
+
+          return response.statusCode == 200;
         },
       );
+
+      if (!isSucceed) throw Exception("Logout failed.");
 
       await authPreference.clear();
 

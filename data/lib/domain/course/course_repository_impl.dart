@@ -28,8 +28,8 @@ class CourseRepositoryImpl implements CourseRepository {
     required int courseId,
   }) async {
     try {
-      final data = await authPreference.callWithAuth(
-        openapi: openapi,
+      final data = await openapi.callWithAuth(
+        authPreference: authPreference,
         action: (accessToken) async {
           final api = openapi.getGPTAPIApi();
           final response = await api.getFullDetail(
@@ -71,8 +71,8 @@ class CourseRepositoryImpl implements CourseRepository {
         return Failure(exception: Exception("코스 데이터를 불러오는 도중 오류가 발생했습니다."));
       }
 
-      final success = await authPreference.callWithAuth(
-        openapi: openapi,
+      final success = await openapi.callWithAuth(
+        authPreference: authPreference,
         action: (accessToken) async {
           final api = openapi.getFestivalControllerApi();
 
@@ -167,8 +167,8 @@ class CourseRepositoryImpl implements CourseRepository {
     required size,
   }) async {
     try {
-      final data = await authPreference.callWithAuth(
-        openapi: openapi,
+      final data = await openapi.callWithAuth(
+        authPreference: authPreference,
         action: (accessToken) async {
           final api = openapi.getGPTAPIApi();
           final response = await api.callGet(
@@ -197,8 +197,8 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<Result<void>> startCourse({required int courseId}) async {
     try {
-      final isSucceed = await authPreference.callWithAuth(
-        openapi: openapi,
+      final isSucceed = await openapi.callWithAuth(
+        authPreference: authPreference,
         action: (accessToken) async {
           final api = openapi.getCourseControllerApi();
           final req = CourseStartReq((b) => b..courseId = courseId);
@@ -220,8 +220,8 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<Result<void>> endCourse() async {
     try {
-      final isSucceed = await authPreference.callWithAuth(
-        openapi: openapi,
+      final isSucceed = await openapi.callWithAuth(
+        authPreference: authPreference,
         action: (accessToken) async {
           final api = openapi.getCourseControllerApi();
           final req = CourseEndReq((b) => b..courseId);

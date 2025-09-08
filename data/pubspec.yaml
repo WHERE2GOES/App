@@ -14,6 +14,7 @@ dependencies:
   core:
     path: ../core
 
+  built_collection: ^5.1.1
   dio: ^5.8.0+1
   freezed_annotation: ^3.0.0
   flutter_dotenv: ^5.2.1

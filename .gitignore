@@ -43,3 +43,5 @@ app.*.map.json
 **/*.config.dart
 **/*.freezed.dart
 **/pubspec_overrides.yaml
+
+*.jks

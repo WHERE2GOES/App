@@ -26,6 +26,7 @@ void main() async {
       GoRoute(
         path: '/login',
         builder: (context, state) => LoginApp(
+          vm: GetIt.I(),
           onLoginSucceeded: () {
             context.go("/home");
           },
@@ -36,10 +37,10 @@ void main() async {
         builder: (context, state) => HomeApp(
           vm: GetIt.I(),
           onCurrentCourseCardClicked: () {
-            context.go("/navigation");
+            context.push("/navigation");
           },
           onCourseStarted: () {
-            context.go("/navigation");
+            context.push("/navigation");
           },
         ),
       ),

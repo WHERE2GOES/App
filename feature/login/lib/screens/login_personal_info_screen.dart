@@ -132,7 +132,7 @@ class _LoginPersonalInfoScreenState extends State<LoginPersonalInfoScreen> {
                 ],
               ),
               GestureDetector(
-                onTap: widget.onSelectPictureButtonClicked,
+                onTap: widget.onSubmitButtonClicked,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(8),

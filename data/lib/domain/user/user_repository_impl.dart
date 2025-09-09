@@ -105,6 +105,13 @@ class UserRepositoryImpl implements UserRepository {
       );
 
       if (!isSucceed) throw Exception("회원 정보 가입 실패");
+
+      final isPreferenceSucceed = await updatePreference(
+        request: PreferenceUpdateRequest(preferences: request.preferences),
+      );
+
+      if (isPreferenceSucceed is! Success<bool>) throw Exception("회원 정보 가입 실패");
+
       return Success(data: null);
     } on Exception catch (e) {
       return Failure(exception: e);
@@ -141,7 +148,7 @@ class UserRepositoryImpl implements UserRepository {
             answerReq: body,
             headers: {"Authorization": "Bearer $accessToken"},
           );
-          
+
           return response.statusCode == 200;
         },
       );

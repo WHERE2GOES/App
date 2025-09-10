@@ -40,7 +40,7 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<void> loadPreferenceQuestions() async {
-    preferenceQuestions = [];
+    preferenceQuestions = null;
     notifyListeners();
 
     final result = await userRepository.getPreferenceQuestions();
@@ -88,7 +88,7 @@ class LoginViewModel extends ChangeNotifier {
         ),
       );
 
-      return result is Success<bool> && result.data;
+      return result is Success;
     } on TypeError catch (_) {
       return false;
     }

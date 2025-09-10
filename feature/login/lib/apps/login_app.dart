@@ -159,7 +159,9 @@ class _LoginAppState extends State<LoginApp> {
     }
   }
 
-  void _onSelectPictureButtonClicked() async {}
+  void _onSelectPictureButtonClicked() async {
+    // TODO
+  }
 
   void _onCoursePreferenceOptionClicked({
     required int questionId,

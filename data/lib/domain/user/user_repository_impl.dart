@@ -86,31 +86,25 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<Result<void>> signUp({required SignUpRequest request}) async {
     try {
-      final isSucceed = await openapi.callWithAuth(
-        authPreference: authPreference,
-        action: (accessToken) async {
-          final api = openapi.getLoginAPIApi();
-          final email = await authPreference.pendingEmail;
-          final domain = await authPreference.pendingEmailDomain;
+      final api = openapi.getLoginAPIApi();
+      final email = await authPreference.pendingEmail;
+      final domain = await authPreference.pendingEmailDomain;
 
-          final body = O.SignUpRequest(
-            (b) => b
-              ..domain = domain
-              ..email = email
-              ..name = request.nickname,
-          );
-          final response = await api.signUp(signUpRequest: body);
-          return response.statusCode == 200;
-        },
+      final body = O.SignUpRequest(
+        (b) => b
+          ..domain = domain
+          ..email = email
+          ..name = request.nickname,
       );
 
-      if (!isSucceed) throw Exception("회원 정보 가입 실패");
+      final response = await api.signUp(signUpRequest: body);
 
-      final isPreferenceSucceed = await updatePreference(
+      await authPreference.setAccessToken(response.data!.data!.accessToken!);
+      await authPreference.setRefreshToken(response.data!.data!.refreshToken!);
+
+      await updatePreference(
         request: PreferenceUpdateRequest(preferences: request.preferences),
       );
-
-      if (isPreferenceSucceed is! Success<bool>) throw Exception("회원 정보 가입 실패");
 
       return Success(data: null);
     } on Exception catch (e) {

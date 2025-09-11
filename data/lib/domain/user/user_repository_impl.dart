@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:built_collection/built_collection.dart';
 import 'package:core/common/result.dart';
 import 'package:core/domain/user/model/course_preference_type.dart';
@@ -58,7 +60,7 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<Result<CoursePreferenceType>> getCoursePreferenceType() async {
     // TODO: implement getCoursePreferenceType
-    return Failure(exception: Exception("Not implemented"));
+    return Success(data: CoursePreferenceType.values[Random().nextInt(8)]);
   }
 
   @override
@@ -162,7 +164,9 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Result<void>> updateProfile({required ProfileUpdateRequest request}) async {
+  Future<Result<void>> updateProfile({
+    required ProfileUpdateRequest request,
+  }) async {
     // TODO: implement updateProfile
     return Failure(exception: Exception("Not implemented"));
   }

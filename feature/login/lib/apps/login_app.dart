@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:core/domain/auth/model/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:login/models/login_result.dart';
+import 'package:login/screens/login_course_preference_end_screen.dart';
 import 'package:login/screens/login_course_preference_start_screen.dart';
 import 'package:login/screens/login_course_preferences_screen.dart';
 import 'package:login/screens/login_personal_info_screen.dart';
@@ -58,6 +59,8 @@ class _LoginAppState extends State<LoginApp> {
                       _buildLoginCoursePreferencesStartScreen(),
                     "/course_preferences" =>
                       _buildLoginCoursePreferencesScreen(),
+                    "/course_preference_end" =>
+                      _buildLoginCoursePreferenceEndScreen(),
                     _ => throw Exception("Unsupported route"),
                   };
                 },
@@ -123,6 +126,13 @@ class _LoginAppState extends State<LoginApp> {
             onNextButtonClicked: _onNextPreferenceQuestionButtonClicked,
           )
         : const SizedBox.shrink();
+  }
+
+  Widget _buildLoginCoursePreferenceEndScreen() {
+    return LoginCoursePreferenceEndScreen(
+      backgroundType: widget.vm.coursePreferenceType,
+      onGoToNextScreen: widget.onLoginSucceeded,
+    );
   }
 
   void _back() {
@@ -192,7 +202,8 @@ class _LoginAppState extends State<LoginApp> {
       );
 
       if (result) {
-        widget.onLoginSucceeded();
+        widget.vm.getCoursePreferenceType();
+        _navigatorKey.currentState?.pushNamed("/course_preference_end");
       }
     }
   }

@@ -4,6 +4,7 @@ import 'package:core/common/result.dart';
 import 'package:core/domain/auth/auth_repository.dart';
 import 'package:core/domain/auth/model/auth_provider.dart';
 import 'package:core/domain/auth/model/auth_token_type.dart';
+import 'package:core/domain/user/model/course_preference_type.dart';
 import 'package:core/domain/user/model/preference_question_entity.dart';
 import 'package:core/domain/user/model/sign_up_request.dart';
 import 'package:core/domain/user/user_repository.dart';
@@ -20,6 +21,8 @@ class LoginViewModel extends ChangeNotifier {
 
   List<({PreferenceQuestionEntity question, int? selectedOptionIndex})>?
   preferenceQuestions;
+
+  CoursePreferenceType? coursePreferenceType;
 
   Future<LoginResult> login({
     required AuthProvider authProvider,
@@ -91,6 +94,15 @@ class LoginViewModel extends ChangeNotifier {
       return result is Success;
     } on TypeError catch (_) {
       return false;
+    }
+  }
+
+  Future<void> getCoursePreferenceType() async {
+    final result = await userRepository.getCoursePreferenceType();
+
+    if (result is Success<CoursePreferenceType>) {
+      coursePreferenceType = result.data;
+      notifyListeners();
     }
   }
 }

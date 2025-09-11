@@ -17,7 +17,7 @@ abstract interface class CourseRepository {
   });
 
   /// 추천 코스 목록 (개인 맞춤형)
-  Future<Result<FittedCourseEntity>> getFittedCourses();
+  Future<Result<List<FittedCourseEntity>>> getFittedCourses();
 
   /// 특정 코스의 정보
   Future<Result<CourseInfoEntity>> getCourseInfo({required int courseId});

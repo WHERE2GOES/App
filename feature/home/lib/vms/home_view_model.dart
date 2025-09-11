@@ -5,6 +5,8 @@ import 'package:core/domain/course/course_repository.dart';
 import 'package:core/domain/course/model/course_info_entity.dart';
 import 'package:core/domain/course/model/course_property_entity.dart';
 import 'package:core/domain/course/model/course_property_type.dart';
+import 'package:core/domain/course/model/current_course_entity.dart';
+import 'package:core/domain/course/model/fitted_course_entity.dart';
 import 'package:core/domain/course/model/recommended_course_entity.dart';
 import 'package:core/domain/onboarding/onboarding_repository.dart';
 import 'package:core/domain/user/model/course_preference_type.dart';
@@ -26,6 +28,8 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<Uint8List?>? bannerImage;
   List<RecommendedCourseEntity>? recommendedCourses;
+  List<FittedCourseEntity>? fitCourses;
+  CurrentCourseEntity? currentCourse;
   CoursePreferenceType? coursePreferenceType;
   int? _selectedCourseId;
   CourseInfoEntity? courseInfo;
@@ -70,12 +74,37 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> loadCurrentCourse() async {
+    currentCourse = null;
+    notifyListeners();
+
+    final result = await courseRepository.getCurrentCourse();
+
+    if (result is Success<CurrentCourseEntity>) {
+      currentCourse = result.data;
+      notifyListeners();
+    }
+  }
+
   Future<void> loadAll() async {
     await Future.wait([
       loadBannerImage(),
+      loadCurrentCourse(),
       loadRecommendedCourses(),
       loadCoursePreferenceType(),
     ], eagerError: false);
+  }
+
+  Future<void> loadFitCourses() async {
+    fitCourses = null;
+    notifyListeners();
+
+    final result = await courseRepository.getFittedCourses();
+
+    if (result is Success<List<FittedCourseEntity>>) {
+      fitCourses = result.data;
+      notifyListeners();
+    }
   }
 
   Future<void> selectCourse({required int courseId}) async {

@@ -180,7 +180,7 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Future<Result<FittedCourseEntity>> getFittedCourses() async {
+  Future<Result<List<FittedCourseEntity>>> getFittedCourses() async {
     // TODO: implement getFittedCourses
     return Failure(exception: Exception());
   }

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home/models/course_spot.dart';
 import 'package:home/screens/home_course_detail_screen.dart';
+import 'package:home/screens/home_fit_course_screen.dart';
 import 'package:home/screens/home_screen.dart';
 import 'package:home/vms/home_view_model.dart';
 
@@ -51,6 +52,7 @@ class _HomeAppState extends State<HomeApp> {
                 builder: (context, child) {
                   return switch (settings.name) {
                     '/' => _buildHomeScreen(),
+                    '/fit' => _buildHomeFitCourseScreen(),
                     '/course' => _buildHomeCourseDetailScreen(),
                     _ => throw Exception("Invalid route"),
                   };
@@ -66,10 +68,13 @@ class _HomeAppState extends State<HomeApp> {
   Widget _buildHomeScreen() {
     final recommendedCourses = widget.vm.recommendedCourses;
     final coursePreferenceType = widget.vm.coursePreferenceType;
+    final currentCourse = widget.vm.currentCourse;
 
     return HomeScreen(
       bannerImage: widget.vm.bannerImage,
-      courseInProgressCard: null, // TODO: 진행중인 코스 기능 추가
+      courseInProgressCard: currentCourse != null
+          ? (onClicked: widget.onCurrentCourseCardClicked)
+          : null,
       recommendedCourses: recommendedCourses
           ?.map(
             (e) => (
@@ -84,20 +89,52 @@ class _HomeAppState extends State<HomeApp> {
           ? (
               image: rootBundle
                   .load(switch (coursePreferenceType) {
-                    CoursePreferenceType.a => "packages/home/assets/images/img_course_banner1.png",
-                    CoursePreferenceType.b => "packages/home/assets/images/img_course_banner2.png",
-                    CoursePreferenceType.c => "packages/home/assets/images/img_course_banner3.png",
-                    CoursePreferenceType.d => "packages/home/assets/images/img_course_banner4.png",
-                    CoursePreferenceType.e => "packages/home/assets/images/img_course_banner5.png",
-                    CoursePreferenceType.f => "packages/home/assets/images/img_course_banner6.png",
-                    CoursePreferenceType.g => "packages/home/assets/images/img_course_banner7.png",
-                    CoursePreferenceType.h => "packages/home/assets/images/img_course_banner8.png",
+                    CoursePreferenceType.a =>
+                      "packages/home/assets/images/img_course_banner1.png",
+                    CoursePreferenceType.b =>
+                      "packages/home/assets/images/img_course_banner2.png",
+                    CoursePreferenceType.c =>
+                      "packages/home/assets/images/img_course_banner3.png",
+                    CoursePreferenceType.d =>
+                      "packages/home/assets/images/img_course_banner4.png",
+                    CoursePreferenceType.e =>
+                      "packages/home/assets/images/img_course_banner5.png",
+                    CoursePreferenceType.f =>
+                      "packages/home/assets/images/img_course_banner6.png",
+                    CoursePreferenceType.g =>
+                      "packages/home/assets/images/img_course_banner7.png",
+                    CoursePreferenceType.h =>
+                      "packages/home/assets/images/img_course_banner8.png",
                   })
                   .then((value) => value.buffer.asUint8List()),
               typeName: coursePreferenceType.name,
-              onClicked: () {},
+              onClicked: () {
+                widget.vm.loadFitCourses();
+                _navigatorKey.currentState?.pushNamed('/fit');
+              },
             )
           : null,
+    );
+  }
+
+  Widget _buildHomeFitCourseScreen() {
+    final coursePreferenceType = widget.vm.coursePreferenceType;
+    final fitCourses = widget.vm.fitCourses;
+
+    if (coursePreferenceType == null) {
+      throw Exception("coursePreferenceType is null");
+    }
+
+    return HomeFitCourseScreen(
+      type: coursePreferenceType,
+      courses: fitCourses
+          ?.map(
+            (e) => (
+              title: e.name,
+              onClicked: () => _onCourseClicked(courseId: e.id),
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -196,7 +233,7 @@ class _HomeAppState extends State<HomeApp> {
     }
   }
 
-  void _onCourseClicked({required dynamic courseId}) {
+  void _onCourseClicked({required int courseId}) {
     widget.vm.selectCourse(courseId: courseId);
     _navigatorKey.currentState
         ?.pushNamed('/course')

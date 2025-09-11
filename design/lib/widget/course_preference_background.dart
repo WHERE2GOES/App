@@ -5,10 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class CoursePreferenceBackground extends StatelessWidget {
-  const CoursePreferenceBackground({super.key, required this.type});
+  const CoursePreferenceBackground({
+    super.key,
+    required this.type,
+    this.isDecorationVisible = true,
+  });
 
   final CoursePreferenceBackgroundType type;
   final Size originalSize = const Size(360, 800);
+  final bool isDecorationVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +43,16 @@ class CoursePreferenceBackground extends StatelessWidget {
                 height: type.backgroundSize.height * ratio,
               ),
             ),
-            Positioned(
-              left: type.decorationOffset.dx * ratio,
-              top: type.decorationOffset.dy * ratio,
-              child: SvgPicture.asset(
-                type.decorationAsset,
-                width: type.decorationSize.width * ratio,
-                height: type.decorationSize.height * ratio,
+            if (isDecorationVisible)
+              Positioned(
+                left: type.decorationOffset.dx * ratio,
+                top: type.decorationOffset.dy * ratio,
+                child: SvgPicture.asset(
+                  type.decorationAsset,
+                  width: type.decorationSize.width * ratio,
+                  height: type.decorationSize.height * ratio,
+                ),
               ),
-            ),
           ],
         ),
       ),

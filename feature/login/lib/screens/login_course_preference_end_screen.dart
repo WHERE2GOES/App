@@ -21,6 +21,7 @@ class LoginCoursePreferenceEndScreen extends StatefulWidget {
 
 class _LoginCoursePreferenceEndScreenState
     extends State<LoginCoursePreferenceEndScreen> {
+  bool _showType = false;
   bool _canGoToNextScreen = false;
 
   @override
@@ -28,9 +29,11 @@ class _LoginCoursePreferenceEndScreenState
     super.initState();
 
     Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _canGoToNextScreen = true;
-      });
+      setState(() => _showType = true);
+    });
+
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() => _canGoToNextScreen = true);
     });
   }
 
@@ -42,23 +45,47 @@ class _LoginCoursePreferenceEndScreenState
       color: ThemeColors.highlightedRed,
       child: GestureDetector(
         onTap: _canGoToNextScreen ? widget.onGoToNextScreen : null,
-        child: AnimatedOpacity(
-          opacity: backgroundType == null ? 0 : 1,
-          duration: const Duration(milliseconds: 500),
-          child: backgroundType != null
-              ? CoursePreferenceBackground(
-                  type: switch (backgroundType) {
-                    CoursePreferenceType.a => CoursePreferenceBackgroundType.a,
-                    CoursePreferenceType.b => CoursePreferenceBackgroundType.b,
-                    CoursePreferenceType.c => CoursePreferenceBackgroundType.c,
-                    CoursePreferenceType.d => CoursePreferenceBackgroundType.d,
-                    CoursePreferenceType.e => CoursePreferenceBackgroundType.e,
-                    CoursePreferenceType.f => CoursePreferenceBackgroundType.f,
-                    CoursePreferenceType.g => CoursePreferenceBackgroundType.g,
-                    CoursePreferenceType.h => CoursePreferenceBackgroundType.h,
-                  },
-                )
-              : null,
+        child: Stack(
+          children: [
+            const SizedBox.expand(
+              child: Center(
+                child: Text(
+                  "당신의 국토대장정 취향은..",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            AnimatedOpacity(
+              opacity: _showType ? 1 : 0,
+              duration: const Duration(milliseconds: 500),
+              child: backgroundType != null
+                  ? CoursePreferenceBackground(
+                      type: switch (backgroundType) {
+                        CoursePreferenceType.a =>
+                          CoursePreferenceBackgroundType.a,
+                        CoursePreferenceType.b =>
+                          CoursePreferenceBackgroundType.b,
+                        CoursePreferenceType.c =>
+                          CoursePreferenceBackgroundType.c,
+                        CoursePreferenceType.d =>
+                          CoursePreferenceBackgroundType.d,
+                        CoursePreferenceType.e =>
+                          CoursePreferenceBackgroundType.e,
+                        CoursePreferenceType.f =>
+                          CoursePreferenceBackgroundType.f,
+                        CoursePreferenceType.g =>
+                          CoursePreferenceBackgroundType.g,
+                        CoursePreferenceType.h =>
+                          CoursePreferenceBackgroundType.h,
+                      },
+                    )
+                  : null,
+            ),
+          ],
         ),
       ),
     );

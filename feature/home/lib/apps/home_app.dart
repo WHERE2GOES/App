@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:core/domain/course/model/course_property_type.dart';
+import 'package:core/domain/user/model/course_preference_type.dart';
 import 'package:design/theme/theme_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home/models/course_spot.dart';
 import 'package:home/screens/home_course_detail_screen.dart';
 import 'package:home/screens/home_screen.dart';
@@ -63,7 +65,7 @@ class _HomeAppState extends State<HomeApp> {
 
   Widget _buildHomeScreen() {
     final recommendedCourses = widget.vm.recommendedCourses;
-    final fittedCourse = widget.vm.fittedCourse;
+    final coursePreferenceType = widget.vm.coursePreferenceType;
 
     return HomeScreen(
       bannerImage: widget.vm.bannerImage,
@@ -78,12 +80,22 @@ class _HomeAppState extends State<HomeApp> {
             ),
           )
           .toList(),
-      fitCourse: fittedCourse != null
+      fitCourse: coursePreferenceType != null
           ? (
-              image: fittedCourse.image,
-              typeName: "솔솔산책", // FIXME: 코스의 추천 타입 이름으로 변경 팔요
-              onClicked: () =>
-                  _onCourseClicked(courseId: widget.vm.fittedCourse!.id),
+              image: rootBundle
+                  .load(switch (coursePreferenceType) {
+                    CoursePreferenceType.a => "packages/home/assets/images/img_course_banner1.png",
+                    CoursePreferenceType.b => "packages/home/assets/images/img_course_banner2.png",
+                    CoursePreferenceType.c => "packages/home/assets/images/img_course_banner3.png",
+                    CoursePreferenceType.d => "packages/home/assets/images/img_course_banner4.png",
+                    CoursePreferenceType.e => "packages/home/assets/images/img_course_banner5.png",
+                    CoursePreferenceType.f => "packages/home/assets/images/img_course_banner6.png",
+                    CoursePreferenceType.g => "packages/home/assets/images/img_course_banner7.png",
+                    CoursePreferenceType.h => "packages/home/assets/images/img_course_banner8.png",
+                  })
+                  .then((value) => value.buffer.asUint8List()),
+              typeName: coursePreferenceType.name,
+              onClicked: () {},
             )
           : null,
     );

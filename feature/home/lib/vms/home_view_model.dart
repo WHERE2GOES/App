@@ -5,9 +5,10 @@ import 'package:core/domain/course/course_repository.dart';
 import 'package:core/domain/course/model/course_info_entity.dart';
 import 'package:core/domain/course/model/course_property_entity.dart';
 import 'package:core/domain/course/model/course_property_type.dart';
-import 'package:core/domain/course/model/fitted_course_entity.dart';
 import 'package:core/domain/course/model/recommended_course_entity.dart';
 import 'package:core/domain/onboarding/onboarding_repository.dart';
+import 'package:core/domain/user/model/course_preference_type.dart';
+import 'package:core/domain/user/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
@@ -15,15 +16,17 @@ import 'package:injectable/injectable.dart';
 class HomeViewModel extends ChangeNotifier {
   final CourseRepository courseRepository;
   final OnboardingRepository onboardingRepository;
+  final UserRepository userRepository;
 
   HomeViewModel({
     required this.courseRepository,
     required this.onboardingRepository,
+    required this.userRepository,
   });
 
   Future<Uint8List?>? bannerImage;
   List<RecommendedCourseEntity>? recommendedCourses;
-  FittedCourseEntity? fittedCourse;
+  CoursePreferenceType? coursePreferenceType;
   int? _selectedCourseId;
   CourseInfoEntity? courseInfo;
   List<CoursePropertyEntity>? foodSpots;
@@ -55,14 +58,14 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> loadFittedCourse() async {
-    fittedCourse = null;
+  Future<void> loadCoursePreferenceType() async {
+    coursePreferenceType = null;
     notifyListeners();
 
-    final result = await courseRepository.getFittedCourses();
+    final result = await userRepository.getCoursePreferenceType();
 
-    if (result is Success<FittedCourseEntity>) {
-      fittedCourse = result.data;
+    if (result is Success<CoursePreferenceType>) {
+      coursePreferenceType = result.data;
       notifyListeners();
     }
   }
@@ -71,7 +74,7 @@ class HomeViewModel extends ChangeNotifier {
     await Future.wait([
       loadBannerImage(),
       loadRecommendedCourses(),
-      loadFittedCourse(),
+      loadCoursePreferenceType(),
     ], eagerError: false);
   }
 

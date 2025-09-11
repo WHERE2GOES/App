@@ -11,5 +11,8 @@ abstract class CoursePropertyEntity with _$CoursePropertyEntity {
     required Future<Uint8List?> image,
     required String name,
     required CoursePropertyType type,
+    required String address,
+    required double latitude,
+    required double longitude,
   }) = _CoursePropertyEntity;
 }

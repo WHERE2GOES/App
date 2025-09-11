@@ -141,12 +141,11 @@ class _HomeAppState extends State<HomeApp> {
                           style: TextStyle(color: ThemeColors.grey800),
                         ),
                         TextSpan(
-                          text:
-                              "${widget.vm.courseInfo?.courseName ?? ''}의 ${switch (e.first.type) {
-                                CoursePropertyType.food => "먹거리",
-                                CoursePropertyType.photoSpot => "사진스팟",
-                                CoursePropertyType.activity => "놀거리",
-                              }}",
+                          text: switch (e.first.type) {
+                            CoursePropertyType.food => "먹거리",
+                            CoursePropertyType.photoSpot => "사진스팟",
+                            CoursePropertyType.activity => "놀거리",
+                          },
                           style: TextStyle(
                             color: ThemeColors.grey800,
                             fontWeight: FontWeight.bold,

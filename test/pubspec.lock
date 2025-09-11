@@ -416,10 +416,10 @@ packages:
     dependency: transitive
     description:
       name: google_sign_in_platform_interface
-      sha256: "8736443134d2cccadd4f228d600177cb3947e36683466a6ab96877ce6932885a"
+      sha256: "7f59208c42b415a3cca203571128d6f84f885fead2d5b53eb65a9e27f2965bb5"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "3.1.0"
   google_sign_in_web:
     dependency: transitive
     description:
@@ -629,7 +629,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "7ebfff22d01ce8d37c57c54b7782de4773c66d80"
+      resolved-ref: e71ee0176b0ee31a84801de4126764b2e7c7e18f
       url: "https://github.com/WHERE2GOES/Dart-Client"
     source: git
     version: "1.0.0"

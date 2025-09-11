@@ -1,4 +1,5 @@
 import 'package:core/common/result.dart';
+import 'package:core/domain/user/model/course_preference_type.dart';
 import 'package:core/domain/user/model/preference_update_requrest.dart';
 import 'package:core/domain/user/model/profile_update_request.dart';
 import 'package:core/domain/user/model/preference_question_entity.dart';
@@ -11,6 +12,9 @@ abstract interface class UserRepository {
 
   /// 사용자 여정 취향 질문 리스트
   Future<Result<List<PreferenceQuestionEntity>>> getPreferenceQuestions();
+
+  /// 사용자 여정 취향
+  Future<Result<CoursePreferenceType>> getCoursePreferenceType();
 
   /// 사용자 가입 절차 수행
   Future<Result<void>> signUp({required SignUpRequest request});

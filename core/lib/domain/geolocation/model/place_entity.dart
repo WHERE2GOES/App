@@ -8,7 +8,6 @@ abstract class PlaceEntity with _$PlaceEntity {
   const factory PlaceEntity({
     required String name,
     required PlaceCategory category,
-    required String address,
     required double latitude,
     required double longitude,
   }) = _PlaceEntity;

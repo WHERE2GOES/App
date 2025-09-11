@@ -10,7 +10,7 @@ abstract interface class GeolocationRepository {
   Future<Result<List<PlaceEntity>>> getNearbyPlaces({
     required double latitude,
     required double longitude,
-    required PlaceCategory placeCategory,
+    PlaceCategory? placeCategory,
     int radius = 1000, // 조회 반경 (단위: 미터)
     int limit = 50, // 최대 조회 결과 수
   });

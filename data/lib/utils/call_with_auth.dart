@@ -18,9 +18,7 @@ extension OpenapiExtensions on Openapi {
       final rt = await authPreference.refreshToken;
       if (rt == null) throw Exception("No refresh token found");
 
-      final response = await getTokenControllerApi().makeNewToken(
-        body: rt,
-      );
+      final response = await getTokenControllerApi().makeNewToken(body: rt);
 
       authPreference.setRefreshToken(response.data!.data!.refreshToken!);
       authPreference.setAccessToken(response.data!.data!.accessToken!);

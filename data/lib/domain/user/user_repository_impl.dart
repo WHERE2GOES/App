@@ -1,5 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:core/common/result.dart';
+import 'package:core/domain/user/model/course_preference_type.dart';
 import 'package:core/domain/user/model/preference_question_entity.dart';
 import 'package:core/domain/user/model/preference_update_requrest.dart';
 import 'package:core/domain/user/model/profile_update_request.dart';
@@ -52,6 +53,12 @@ class UserRepositoryImpl implements UserRepository {
     } on Exception catch (e) {
       return Failure(exception: e);
     }
+  }
+
+  @override
+  Future<Result<CoursePreferenceType>> getCoursePreferenceType() async {
+    // TODO: implement getCoursePreferenceType
+    return Failure(exception: Exception("Not implemented"));
   }
 
   @override
@@ -155,8 +162,8 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Result<void>> updateProfile({required ProfileUpdateRequest request}) {
+  Future<Result<void>> updateProfile({required ProfileUpdateRequest request}) async {
     // TODO: implement updateProfile
-    throw UnimplementedError();
+    return Failure(exception: Exception("Not implemented"));
   }
 }

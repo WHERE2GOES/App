@@ -252,6 +252,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                     return Container(
                       width: 115,
                       height: 115,
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(

@@ -1,1 +1,1 @@
-enum PlaceCategory { toilet, restaurant, rest }
+enum PlaceCategory { toilet, restaurant, rest, other }

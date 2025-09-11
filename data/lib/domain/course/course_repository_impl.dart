@@ -44,7 +44,7 @@ class CourseRepositoryImpl implements CourseRepository {
         data: CourseInfoEntity(
           id: courseId,
           courseName: data.name!,
-          regionName: "",
+          regionName: data.country!,
           description: data.aiSummary!,
           bannerImage: getFutureFromImageUrl(data.imageUrl!),
           scores: data.weights!.entries.map((e) {
@@ -89,6 +89,12 @@ class CourseRepositoryImpl implements CourseRepository {
                     image: getFutureFromImageUrl(e.firstimage!),
                     name: e.title!,
                     type: CoursePropertyType.food,
+                    address: [
+                      e.addr1,
+                      e.addr2,
+                    ].whereType<String>().where((e) => e.isNotEmpty).join(" "),
+                    latitude: double.parse(e.mapy!),
+                    longitude: double.parse(e.mapx!),
                   );
                 }).toList(),
               );
@@ -112,6 +118,12 @@ class CourseRepositoryImpl implements CourseRepository {
                       image: getFutureFromImageUrl(e.firstimage!),
                       name: e.title!,
                       type: CoursePropertyType.activity,
+                      address: [e.addr1, e.addr2]
+                          .whereType<String>()
+                          .where((e) => e.isNotEmpty)
+                          .join(" "),
+                      latitude: double.parse(e.mapy!),
+                      longitude: double.parse(e.mapx!),
                     );
                   }),
                   ...plays.data!.data!.map((e) {
@@ -119,6 +131,12 @@ class CourseRepositoryImpl implements CourseRepository {
                       image: getFutureFromImageUrl(e.firstimage!),
                       name: e.title!,
                       type: CoursePropertyType.activity,
+                      address: [e.addr1, e.addr2]
+                          .whereType<String>()
+                          .where((e) => e.isNotEmpty)
+                          .join(" "),
+                      latitude: double.parse(e.mapy!),
+                      longitude: double.parse(e.mapx!),
                     );
                   }),
                 ],
@@ -136,6 +154,12 @@ class CourseRepositoryImpl implements CourseRepository {
                     image: getFutureFromImageUrl(e.firstimage!),
                     name: e.title!,
                     type: CoursePropertyType.photoSpot,
+                    address: [
+                      e.addr1,
+                      e.addr2,
+                    ].whereType<String>().where((e) => e.isNotEmpty).join(" "),
+                    latitude: double.parse(e.mapy!),
+                    longitude: double.parse(e.mapx!),
                   );
                 }).toList(),
               );
@@ -224,8 +248,10 @@ class CourseRepositoryImpl implements CourseRepository {
         authPreference: authPreference,
         action: (accessToken) async {
           final api = openapi.getCourseControllerApi();
-          final req = CourseEndReq((b) => b..courseId);
-          final response = await api.endCourse(courseEndReq: req);
+          final response = await api.endCourse(
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
+
           return response.statusCode == 200;
         },
       );

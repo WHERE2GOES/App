@@ -20,6 +20,11 @@ scripts:
     run: melos exec -- flutter pub get
     description: "Runs pub get in all packages to install dependencies."
 
+  # 모든 패키지에서 pub upgrade 실행
+  pub_upgrade:
+    run: melos exec -- flutter pub upgrade
+    description: "Runs pub upgrade in all packages to upgrade dependencies."
+
   # 모든 패키지에서 build_runner 빌드 실행
   run_build_runner:
     run: melos exec -- flutter pub run build_runner build --delete-conflicting-outputs

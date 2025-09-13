@@ -29,6 +29,7 @@ dependencies:
     path: ../feature/navigation
 
   flutter_dotenv: ^5.2.1
+  flutter_svg: ^2.1.0
   fluttertoast: ^8.2.12
   kakao_flutter_sdk_user: ^1.9.5
   logger: ^2.6.1

@@ -1,6 +1,5 @@
 import 'package:design/theme/theme_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -28,9 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Expanded(
                 child: Center(
-                  child: SvgPicture.asset(
-                    "assets/images/img_logo.svg",
-                    package: "login",
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    package: "design",
                     width: 145.78,
                   ),
                 ),

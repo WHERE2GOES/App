@@ -22,6 +22,7 @@ class RouteHandler {
   }
 
   static final router = GoRouter(
+    initialLocation: '/',
     routes: [
       GoRoute(path: '/', builder: (context, state) => SplashApp()),
       GoRoute(

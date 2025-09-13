@@ -22,6 +22,7 @@ dependencies:
   google_sign_in: ^7.1.1
   injectable: ^2.5.1
   kakao_flutter_sdk_user: ^1.9.5
+  webview_flutter: ^4.13.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0

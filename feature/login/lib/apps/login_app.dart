@@ -2,22 +2,32 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:core/domain/auth/model/auth_provider.dart';
+import 'package:core/domain/user/model/terms_type.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:login/models/login_result.dart';
 import 'package:login/screens/login_course_preference_end_screen.dart';
 import 'package:login/screens/login_course_preference_start_screen.dart';
 import 'package:login/screens/login_course_preferences_screen.dart';
 import 'package:login/screens/login_personal_info_screen.dart';
 import 'package:login/screens/login_screen.dart';
+import 'package:login/screens/login_terms_agreement_screen.dart';
+import 'package:login/screens/login_terms_view_screen.dart';
 import 'package:login/util/get_google_access_token.dart';
 import 'package:login/util/get_kakao_access_token.dart';
 import 'package:login/vms/login_view_model.dart';
 
 class LoginApp extends StatefulWidget {
-  const LoginApp({super.key, required this.vm, required this.onLoginSucceeded});
+  const LoginApp({
+    super.key,
+    required this.vm,
+    required this.onLoginSucceeded,
+    required this.onBack,
+  });
 
   final LoginViewModel vm;
   final VoidCallback onLoginSucceeded;
+  final VoidCallback onBack;
 
   @override
   State<LoginApp> createState() => _LoginAppState();
@@ -46,7 +56,7 @@ class _LoginAppState extends State<LoginApp> {
           builder: (context) {
             return BackButtonListener(
               onBackButtonPressed: () async {
-                _back();
+                widget.onBack();
                 return true;
               },
               child: ListenableBuilder(
@@ -54,6 +64,10 @@ class _LoginAppState extends State<LoginApp> {
                 builder: (context, child) {
                   return switch (settings.name) {
                     "/" => _buildLoginScreen(),
+                    "/terms_agreement" => _buildLoginTermsAgreementScreen(),
+                    "/terms_view" => _buildLoginTermsViewScreen(
+                      termsType: settings.arguments as TermsType,
+                    ),
                     "/personal_info" => _buildLoginPersonalInfoScreen(),
                     "/course_preferences_start" =>
                       _buildLoginCoursePreferencesStartScreen(),
@@ -79,6 +93,33 @@ class _LoginAppState extends State<LoginApp> {
       onLoginWithGoogleButtonClicked: () =>
           _login(authProvider: AuthProvider.google),
     );
+  }
+
+  Widget _buildLoginTermsAgreementScreen() {
+    return LoginTermsAgreementScreen(
+      onTermsClicked: _onTermsClicked,
+      onAgreeClicked: () {
+        // TODO: 현재는 다음 버튼을 누를 시 필수 항목만 동의학고 넘어가는 것으로 간주됨
+        for (final termsType in [
+          TermsType.termsOfService,
+          TermsType.privacyPolicy,
+        ]) {
+          widget.vm.agreeTerms(termsType: termsType, isAgreed: true);
+        }
+
+        _navigatorKey.currentState?.pushReplacementNamed("/personal_info");
+      },
+    );
+  }
+
+  void _onTermsClicked(termsType) {
+    widget.vm.loadTermsHtml(termsType: termsType);
+
+    _navigatorKey.currentState?.pushNamed("/terms_view", arguments: termsType);
+  }
+
+  Widget _buildLoginTermsViewScreen({required TermsType termsType}) {
+    return LoginTermsViewScreen(html: widget.vm.terms?[termsType]?.html);
   }
 
   Widget _buildLoginPersonalInfoScreen() {
@@ -141,7 +182,7 @@ class _LoginAppState extends State<LoginApp> {
     } else if (_navigatorKey.currentState?.canPop() ?? false) {
       _navigatorKey.currentState?.pop();
     } else {
-      Navigator.of(context).pop();
+      widget.onBack();
     }
   }
 
@@ -164,7 +205,7 @@ class _LoginAppState extends State<LoginApp> {
       case LoginResult.failure:
         break;
       case LoginResult.needRegister:
-        _navigatorKey.currentState?.pushNamed("/personal_info");
+        _navigatorKey.currentState?.pushNamed("/terms_agreement");
         break;
     }
   }

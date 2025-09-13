@@ -16,11 +16,13 @@ class HomeApp extends StatefulWidget {
     required this.vm,
     required this.onCurrentCourseCardClicked,
     required this.onCourseStarted,
+    required this.onBack,
   });
 
   final HomeViewModel vm;
   final VoidCallback onCurrentCourseCardClicked;
   final VoidCallback onCourseStarted;
+  final VoidCallback onBack;
 
   @override
   State<StatefulWidget> createState() => _HomeAppState();
@@ -75,7 +77,7 @@ class _HomeAppState extends State<HomeApp> {
       courseInProgressCard: currentCourse != null
           ? (onClicked: widget.onCurrentCourseCardClicked)
           : null,
-      recommendedCourses: recommendedCourses
+      recommendedCourseCards: recommendedCourses
           ?.map(
             (e) => (
               image: e.image,
@@ -85,7 +87,7 @@ class _HomeAppState extends State<HomeApp> {
             ),
           )
           .toList(),
-      fitCourse: coursePreferenceType != null
+      fitCourseCard: coursePreferenceType != null
           ? (
               image: rootBundle
                   .load(switch (coursePreferenceType) {
@@ -229,7 +231,7 @@ class _HomeAppState extends State<HomeApp> {
     if (_navigatorKey.currentState?.canPop() ?? false) {
       _navigatorKey.currentState?.pop();
     } else {
-      Navigator.of(context).pop();
+      widget.onBack();
     }
   }
 

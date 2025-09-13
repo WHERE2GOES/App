@@ -43,7 +43,7 @@ class _TestApp extends StatelessWidget {
       body: HomeScreen(
         bannerImage: Future.value(bannerImage),
         courseInProgressCard: (onClicked: () {}),
-        recommendedCourses: List.generate(
+        recommendedCourseCards: List.generate(
           30,
           (index) => (
             image: Future.value(null),
@@ -52,7 +52,7 @@ class _TestApp extends StatelessWidget {
             onRendered: () => logger.d("Rendered! index: $index"),
           ),
         ),
-        fitCourse: (
+        fitCourseCard: (
           image: Future.value(fitCourseImage),
           typeName: "용산",
           onClicked: () {},

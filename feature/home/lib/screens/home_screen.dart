@@ -10,8 +10,8 @@ class HomeScreen extends StatefulWidget {
     super.key,
     required this.bannerImage,
     required this.courseInProgressCard,
-    required this.recommendedCourses,
-    required this.fitCourse,
+    required this.recommendedCourseCards,
+    required this.fitCourseCard,
   });
 
   final Future<Uint8List?>? bannerImage;
@@ -24,9 +24,9 @@ class HomeScreen extends StatefulWidget {
       VoidCallback? onRendered,
     })
   >?
-  recommendedCourses;
+  recommendedCourseCards;
   final ({Future<Uint8List?> image, String typeName, VoidCallback onClicked})?
-  fitCourse;
+  fitCourseCard;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -57,9 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: _buildCurrentCourseWidget(),
               ),
-            if (widget.recommendedCourses != null)
+            if (widget.recommendedCourseCards != null)
               _buildRecommendedCourseList(),
-            if (widget.fitCourse != null)
+            if (widget.fitCourseCard != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: _buildFitCourseCard(),
@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRecommendedCourseList() {
-    final recommendedCourses = widget.recommendedCourses;
+    final recommendedCourses = widget.recommendedCourseCards;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFitCourseCard() {
-    final fitCourse = widget.fitCourse;
+    final fitCourse = widget.fitCourseCard;
     final image = fitCourse?.image;
 
     return Column(

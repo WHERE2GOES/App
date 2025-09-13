@@ -7,6 +7,7 @@ import 'package:core/domain/auth/model/auth_token_type.dart';
 import 'package:core/domain/user/model/course_preference_type.dart';
 import 'package:core/domain/user/model/preference_question_entity.dart';
 import 'package:core/domain/user/model/sign_up_request.dart';
+import 'package:core/domain/user/model/terms_type.dart';
 import 'package:core/domain/user/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
@@ -19,6 +20,7 @@ class LoginViewModel extends ChangeNotifier {
 
   LoginViewModel({required this.authRepository, required this.userRepository});
 
+  Map<TermsType, ({String html, bool isAgreed})>? terms;
   List<({PreferenceQuestionEntity question, int? selectedOptionIndex})>?
   preferenceQuestions;
 
@@ -56,6 +58,25 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> loadTermsHtml({required TermsType termsType}) async {
+    terms = null;
+    notifyListeners();
+
+    final result = await userRepository.getTermsHtml(termsType: termsType);
+
+    if (result is Success<String>) {
+      terms![termsType] = (html: result.data, isAgreed: false);
+      notifyListeners();
+    }
+  }
+
+  Future<void> agreeTerms({required TermsType termsType, required bool isAgreed}) async {
+    final terms = this.terms?[termsType];
+    if (terms == null) return;
+    this.terms![termsType] = (html: terms.html, isAgreed: isAgreed);
+    notifyListeners();
+  }
+
   Future<void> selectPreferenceQuestionOption({
     required int questionId,
     required int optionIndex,
@@ -88,6 +109,7 @@ class LoginViewModel extends ChangeNotifier {
                     ),
                   )
                   .toList(),
+          agreedTermsIds: [],
         ),
       );
 

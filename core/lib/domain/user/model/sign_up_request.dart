@@ -7,5 +7,6 @@ abstract class SignUpRequest with _$SignUpRequest {
   const factory SignUpRequest({
     required String nickname,
     required Iterable<({int questionId, int selectedOptionIndex})> preferences,
+    required Iterable<int> agreedTermsIds,
   }) = _SignUpRequest;
 }

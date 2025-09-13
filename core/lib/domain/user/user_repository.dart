@@ -4,9 +4,13 @@ import 'package:core/domain/user/model/preference_update_requrest.dart';
 import 'package:core/domain/user/model/profile_update_request.dart';
 import 'package:core/domain/user/model/preference_question_entity.dart';
 import 'package:core/domain/user/model/sign_up_request.dart';
+import 'package:core/domain/user/model/terms_type.dart';
 import 'package:core/domain/user/model/user_entity.dart';
 
 abstract interface class UserRepository {
+  /// 약관 조회
+  Future<Result<String>> getTermsHtml({required TermsType termsType});
+
   /// 사용자 정보
   Future<Result<UserEntity>> getUserInfo();
 

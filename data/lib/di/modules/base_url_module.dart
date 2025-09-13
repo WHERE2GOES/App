@@ -7,7 +7,7 @@ abstract class BaseUrlModule {
   @singleton
   @preResolve
   Future<String> get baseUrl async {
-    if (!dotenv.isInitialized) await dotenv.load();
+    if (!dotenv.isInitialized) throw Exception("Dotenv is not initialized");
     return dotenv.get("SERVER_BASE_URL");
   }
 }

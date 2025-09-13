@@ -181,8 +181,58 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<Result<List<FittedCourseEntity>>> getFittedCourses() async {
-    // TODO: implement getFittedCourses
-    return Failure(exception: Exception());
+    try {
+      final ids = await openapi.callWithAuth(
+        authPreference: authPreference,
+        action: (accessToken) async {
+          final api = openapi.getSurveyControllerApi();
+          final response = await api.getRecommendations(
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
+
+          return response.data?.data?.recommendedCourseIds?.asList();
+        },
+      );
+
+      if (ids == null) {
+        return Failure(exception: Exception("맞춤 코스가 없습니다."));
+      }
+
+      final responses = await openapi.callWithAuth(
+        authPreference: authPreference,
+        action: (accessToken) async {
+          final api = openapi.getGPTAPIApi();
+
+          final responses = await Future.wait(
+            ids.map((id) async {
+              try {
+                return await api.getFullDetail(
+                  courseId: id.toString(),
+                  headers: {"Authorization": "Bearer $accessToken"},
+                );
+              } on Exception catch (_) {
+                return null;
+              }
+            }),
+          );
+
+          return responses.where((e) => e != null).toList();
+        },
+      );
+
+      return Success(
+        data: responses
+            .map(
+              (e) => FittedCourseEntity(
+                id: int.parse(e!.data!.data!.courseId!),
+                name: e.data!.data!.name!,
+              ),
+            )
+            .toList(),
+      );
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
   }
 
   @override

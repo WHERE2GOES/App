@@ -1,9 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:reward/screens/reward_certification_screen.dart';
+import 'package:reward/screens/reward_download_screen.dart';
 import 'package:reward/screens/reward_qr_scanner_screen.dart';
 import 'package:reward/screens/reward_road_screen.dart';
 import 'package:reward/vms/reward_view_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RewardApp extends StatefulWidget {
   const RewardApp({super.key, required this.vm, required this.onBack});
@@ -48,6 +50,7 @@ class _RewardAppState extends State<RewardApp> {
                       certificateOrder: settings.arguments as int,
                     ),
                     "/qr_scanner" => _buildRewardQrScannerScreen(),
+                    "/download" => _buildRewardDownloadScreen(),
                     _ => throw Exception("Unsupported route"),
                   };
                 },
@@ -80,11 +83,13 @@ class _RewardAppState extends State<RewardApp> {
             ),
           )
           .toList(),
-      completeButton: (
-        onClicked: () {
-          /* TODO */
-        },
-      ),
+      completeButton: certificates?.lastOrNull?.isCompleted == true
+          ? (
+              onClicked: () {
+                /* TODO */
+              },
+            )
+          : null,
     );
   }
 
@@ -102,6 +107,15 @@ class _RewardAppState extends State<RewardApp> {
     return RewardQrScannerScreen(
       onScanCompleted: (qrCode) {
         _onQrScanned(qrCode: qrCode);
+      },
+    );
+  }
+
+  Widget _buildRewardDownloadScreen() {
+    return RewardDownloadScreen(
+      onDownloadButtonClicked: () async {
+        final url = await widget.vm.getDownloadUrl();
+        await launchUrl(Uri.parse(url.downloadLink));
       },
     );
   }

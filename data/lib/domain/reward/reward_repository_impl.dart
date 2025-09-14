@@ -15,8 +15,33 @@ class RewardRepositoryImpl implements RewardRepository {
   RewardRepositoryImpl(this.authPreference, this.openapi);
 
   @override
-  Future<Result<List<OwnedRewardEntity>>> getOwnedRewards() {
-    throw UnimplementedError();
+  Future<Result<List<OwnedRewardEntity>>> getOwnedRewards() async {
+    try {
+      final response = await openapi.callWithAuth(
+        authPreference: authPreference,
+        action: (accessToken) async {
+          final api = openapi.getRewardControllerApi();
+          final response = await api.getRewards(
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
+
+          return response.data?.data?.rewardsList?.asList();
+        },
+      );
+
+      return Success(
+        data: response!
+            .map(
+              (e) => OwnedRewardEntity(
+                courseId: int.parse(e.courseId!),
+                downloadLink: e.rewardItem!,
+              ),
+            )
+            .toList(),
+      );
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
   }
 
   @override
@@ -47,15 +72,22 @@ class RewardRepositoryImpl implements RewardRepository {
       );
 
       return Success(
-        data: response!.certifications!
-            .map(
-              (e) => CertificateEntity(
-                id: e.placeId!,
-                name: e.placeName!,
-                isCompleted: false, // TODO: 백엔드 지원 시 연결
-              ),
-            )
-            .toList(),
+        data: [
+          ...response!.certifications!.map(
+            (e) => CertificateEntity(
+              id: e.placeId!,
+              name: e.placeName!,
+              isCompleted: true,
+            ),
+          ),
+          ...response.uncertifiedList!.map(
+            (e) => CertificateEntity(
+              id: e.placeId!,
+              name: e.placeName!,
+              isCompleted: false,
+            ),
+          ),
+        ],
       );
     } on Exception catch (e) {
       return Failure(exception: e);

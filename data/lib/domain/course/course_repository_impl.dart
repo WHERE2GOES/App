@@ -3,6 +3,7 @@ import 'package:core/domain/course/course_repository.dart';
 import 'package:core/domain/course/model/course_info_entity.dart';
 import 'package:core/domain/course/model/course_property_entity.dart';
 import 'package:core/domain/course/model/course_property_type.dart';
+import 'package:core/domain/course/model/course_route_point_entity.dart';
 import 'package:core/domain/course/model/course_score_entity.dart';
 import 'package:core/domain/course/model/current_course_entity.dart';
 import 'package:core/domain/course/model/fitted_course_entity.dart';
@@ -175,8 +176,27 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<Result<CurrentCourseEntity?>> getCurrentCourse() async {
-    // TODO: implement getCurrentCourse
-    return Failure(exception: Exception());
+    try {
+      final data = await openapi.callWithAuth(
+        authPreference: authPreference,
+        action: (accessToken) async {
+          final api = openapi.getCourseControllerApi();
+          final response = await api.getCurrentCourse(
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
+
+          return response.data?.data;
+        },
+      );
+
+      return Success(
+        data: data!.isRiding!
+            ? CurrentCourseEntity(id: data.courseId!, name: data.courseName!)
+            : null,
+      );
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
   }
 
   @override
@@ -308,6 +328,39 @@ class CourseRepositoryImpl implements CourseRepository {
 
       if (!isSucceed) throw Exception("코스를 끝내지 못했습니다.");
       return Success(data: null);
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
+  }
+
+  @override
+  Future<Result<List<CourseRoutePointEntity>>> getCourseRoute({
+    required int courseId,
+  }) async {
+    try {
+      final data = await openapi.callWithAuth(
+        authPreference: authPreference,
+        action: (accessToken) async {
+          final api = openapi.getCourseControllerApi();
+          final response = await api.getCourseDetail(
+            headers: {"Authorization": "Bearer $accessToken"},
+            id: courseId,
+          );
+
+          return response.data?.data?.route?.asList();
+        },
+      );
+
+      return Success(
+        data: data!
+            .map(
+              (e) => CourseRoutePointEntity(
+                latitude: e.latitude!,
+                longitude: e.longitude!,
+              ),
+            )
+            .toList(),
+      );
     } on Exception catch (e) {
       return Failure(exception: e);
     }

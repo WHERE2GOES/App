@@ -51,9 +51,10 @@ class RouteHandler {
       GoRoute(
         path: '/navigation',
         builder: (context, state) {
-          final latlngs = state.uri.queryParameters["latlngs"];
-
-          return NavigationApp(initialCoursePositionString: latlngs);
+          return NavigationApp(
+            vm: GetIt.I(),
+            onBack: RouteHandler.back,
+          );
         },
       ),
     ],

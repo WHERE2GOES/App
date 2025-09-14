@@ -5,6 +5,7 @@ import 'package:core/domain/geolocation/model/emergency_entity.dart';
 import 'package:core/domain/geolocation/model/place_category.dart';
 import 'package:core/domain/geolocation/model/place_entity.dart';
 import 'package:core/domain/geolocation/model/route_point_entity.dart';
+import 'package:data/sources/tmap/services/tmap_api_service.dart';
 import 'package:injectable/injectable.dart';
 import 'package:data/sources/local/auth_preference.dart';
 import 'package:data/utils/call_with_auth.dart';
@@ -14,10 +15,12 @@ import 'package:openapi/openapi.dart';
 class GeolocationRepositoryImpl implements GeolocationRepository {
   final Openapi openapi;
   final AuthPreference authPreference;
+  final TmapApiService tmapApiService;
 
   const GeolocationRepositoryImpl({
     required this.openapi,
     required this.authPreference,
+    required this.tmapApiService,
   });
 
   @override
@@ -65,7 +68,10 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
         authPreference: authPreference,
         action: (accessToken) async {
           final api = openapi.getCourseControllerApi();
-          final response = await api.getCoursePlaces(id: courseId);
+          final response = await api.getCoursePlaces(
+            id: courseId,
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
           return response.data?.data?.places;
         },
       );
@@ -104,7 +110,46 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
     required double endLatitude,
     required double endLongitude,
   }) async {
-    // TODO: implement getRoute
-    return Failure(exception: Exception("Not implemented"));
+    try {
+      final response = await tmapApiService.getPedestrianRoute(
+        startX: startLatitude,
+        startY: startLongitude,
+        endX: endLatitude,
+        endY: endLongitude,
+        appKey: '',
+        startName: '',
+        endName: '',
+      );
+
+      final route = response.features
+          .map((e) {
+            if (e.geometry.type != "LineString") {
+              return e.geometry.coordinates.map(
+                (e) => RoutePointEntity(
+                  latitude: e[0],
+                  longitude: e[1],
+                  description: null,
+                ),
+              );
+            } else if (e.geometry.type == "Point") {
+              return [
+                RoutePointEntity(
+                  latitude: e.geometry.coordinates[0],
+                  longitude: e.geometry.coordinates[1],
+                  description: e.properties.description,
+                ),
+              ];
+            } else {
+              return null;
+            }
+          })
+          .whereType<Iterable<RoutePointEntity>>()
+          .expand((e) => e)
+          .toList();
+
+      return Success(data: route);
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
   }
 }

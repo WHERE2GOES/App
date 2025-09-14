@@ -1,15 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:navigation/models/place_prop.dart';
 import 'package:navigation/models/place_type.dart';
+import 'package:navigation/models/route_guidance_item_prop.dart';
 import 'package:navigation/screens/navigation_map_screen.dart';
 import 'package:navigation/screens/navigation_nearby_place_screen.dart';
 import 'package:navigation/utils/determine_position.dart';
+import 'package:navigation/vms/navigation_view_model.dart';
 
 class NavigationApp extends StatefulWidget {
-  const NavigationApp({super.key, this.initialCoursePositionString});
+  const NavigationApp({super.key, required this.vm, required this.onBack});
 
-  final String? initialCoursePositionString;
+  final NavigationViewModel vm;
+  final VoidCallback onBack;
 
   @override
   State<StatefulWidget> createState() => _NavigationAppState();
@@ -19,9 +25,41 @@ class _NavigationAppState extends State<NavigationApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   InAppWebViewController? mapController;
-
   bool _shouldShowNearbyPlacePopup = false;
-  PlaceType? _selectedPlaceType;
+  StreamSubscription<Position>? _positionStream;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _positionStream =
+        Geolocator.getPositionStream(
+          locationSettings: LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 100,
+          ),
+        ).listen((Position? position) {
+          if (position == null) return;
+          _updatedCurrentPosition(
+            latitude: position.latitude,
+            longitude: position.longitude,
+          );
+        });
+
+    widget.vm.startNavigation().then((_) {
+      _markRouteToMap(
+        positions: widget.vm.route!
+            .map((e) => (latitude: e.latitude, longitude: e.longitude))
+            .toList(),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _positionStream?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +73,16 @@ class _NavigationAppState extends State<NavigationApp> {
                 _back();
                 return true;
               },
-              child: switch (settings.name) {
-                '/' => _buildNavigationMapScreen(),
-                '/nearby-place' => _buildNavigationNearbyPlaceScreen(),
-                _ => throw Exception("Invalid route"),
-              },
+              child: ListenableBuilder(
+                listenable: widget.vm,
+                builder: (context, child) {
+                  return switch (settings.name) {
+                    '/' => _buildNavigationMapScreen(),
+                    '/nearby-place' => _buildNavigationNearbyPlaceScreen(),
+                    _ => throw Exception("Invalid route"),
+                  };
+                },
+              ),
             );
           },
         );
@@ -58,13 +101,9 @@ class _NavigationAppState extends State<NavigationApp> {
                   .map(
                     (placeType) => (
                       imageAsset: placeType.imageAsset,
-                      onClicked: () {
-                        setState(() {
-                          _shouldShowNearbyPlacePopup = false;
-                          _selectedPlaceType = placeType;
-                        });
-                        _navigatorKey.currentState?.pushNamed("/nearby-place");
-                      },
+                      onClicked: () => _onNearbyPlacePopupButtonClicked(
+                        placeType: placeType,
+                      ),
                     ),
                   )
                   .toList(),
@@ -72,10 +111,17 @@ class _NavigationAppState extends State<NavigationApp> {
                   setState(() => _shouldShowNearbyPlacePopup = false),
             )
           : null,
-      destinationName: "숭실대학교",
-      routeGuidanceItems: [],
+      destinationName: widget.vm.selectedPlace?.name ?? "",
+      routeGuidanceItems: widget.vm.routeToPlace
+          ?.where((e) => e.description != null)
+          .map(
+            (e) => (
+              description: e.description!,
+              routeGuidanceType: RouteGuidanceType.straight,
+            ),
+          )
+          .toList(),
       onTimerClicked: () {},
-      onBackButtonClicked: _back,
       onMenuButtonClicked: () => setState(
         () => _shouldShowNearbyPlacePopup = !_shouldShowNearbyPlacePopup,
       ),
@@ -85,128 +131,61 @@ class _NavigationAppState extends State<NavigationApp> {
   }
 
   Widget _buildNavigationNearbyPlaceScreen() {
+    final selectedPlaceType = widget.vm.selectedPlaceType;
+    final nearbyPlaces = selectedPlaceType != null
+        ? widget.vm.nearbyPlaces[selectedPlaceType]
+        : null;
+
     return NavigationNearbyPlaceScreen(
       placeCagetoryButtons: PlaceType.values
           .map(
             (placeType) => (
               name: placeType.label,
-              onClicked: () => setState(() => _selectedPlaceType = placeType),
+              onClicked: () async {
+                final position = await determinePosition();
+
+                widget.vm.selectPlaceType(
+                  placeType: placeType,
+                  latitude: position.latitude,
+                  longitude: position.longitude,
+                );
+              },
             ),
           )
           .toList(),
-      selectedPlaceCategoryIndex: _selectedPlaceType?.index ?? 0,
-      places: [
-        (
-          distance: 75,
-          name: "올리브영 옆 화장실",
-          isHighligted: true,
-          placeDetailIcon: PlaceDetailIcon.human,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.viewLocation,
-          likeCount: 200,
-          isLiked: true,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 120,
-          name: "스타벅스 안 상가 화장실",
-          isHighligted: true,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 125,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 235,
-          name: "공용 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 45,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 325,
-          name: "메가커피 안 상가 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 20,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 400,
-          name: "올리브영 옆 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 14,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 75,
-          name: "올리브영 옆 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.human,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.viewLocation,
-          likeCount: 200,
-          isLiked: true,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 120,
-          name: "스타벅스 안 상가 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 125,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 235,
-          name: "공용 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 45,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 325,
-          name: "메가커피 안 상가 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 20,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-        (
-          distance: 400,
-          name: "올리브영 옆 화장실",
-          isHighligted: false,
-          placeDetailIcon: PlaceDetailIcon.pin,
-          placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
-          likeCount: 14,
-          isLiked: false,
-          onClicked: () {},
-          onLikeButtonClicked: () {},
-        ),
-      ],
+      selectedPlaceType: selectedPlaceType,
+      places:
+          nearbyPlaces
+              ?.map(
+                (e) => (
+                  distance: 100,
+                  name: e.name,
+                  isHighligted: true,
+                  placeDetailIcon: PlaceDetailIcon.pin,
+                  placeClickingBahaviorText:
+                      PlaceClickingBahaviorText.findRoute,
+                  likeCount: 100,
+                  isLiked: false,
+                  onClicked: () {
+                    widget.vm.selectPlace(place: e).then((_) {
+                      _markRouteToMap(
+                        positions: widget.vm.routeToPlace!
+                            .map(
+                              (e) => (
+                                latitude: e.latitude,
+                                longitude: e.longitude,
+                              ),
+                            )
+                            .toList(),
+                      );
+                    });
+                    _back();
+                  },
+                  onLikeButtonClicked: () {},
+                ),
+              )
+              .toList() ??
+          [],
       shouldShowLoadingIndicatorAtBottom: false,
       onLastPlaceRendered: () {},
     );
@@ -216,24 +195,38 @@ class _NavigationAppState extends State<NavigationApp> {
     if (_navigatorKey.currentState?.canPop() ?? false) {
       _navigatorKey.currentState?.pop();
     } else {
-      Navigator.of(context).pop();
+      widget.onBack();
     }
   }
 
   void _onMapWebViewCreated(InAppWebViewController controller) {
-    final positions = widget.initialCoursePositionString;
+    controller
+        .loadUrl(
+          urlRequest: URLRequest(
+            url: WebUri("https://where-to-goes-navigation.netlify.app"),
+          ),
+        )
+        .then((_) async {
+          await Future.delayed(const Duration(seconds: 2));
+          _moveMapToCurrentPosition();
+        });
 
-    controller.loadUrl(
-      urlRequest: URLRequest(
-        url: WebUri(
-          [
-            "https://where-to-goes-navigation.netlify.app",
-            if (positions != null) "/?latlngs=$positions",
-          ].join(''),
-        ),
-      ),
+    setState(() => mapController = controller);
+  }
+
+  void _updatedCurrentPosition({
+    required double latitude,
+    required double longitude,
+  }) async {
+    mapController?.evaluateJavascript(
+      source: [
+        "window.updateMyLocation(",
+        latitude.toString(),
+        ",",
+        longitude.toString(),
+        ");",
+      ].join(),
     );
-    mapController = controller;
   }
 
   void _moveMapToCurrentPosition() async {
@@ -248,5 +241,38 @@ class _NavigationAppState extends State<NavigationApp> {
         ");",
       ].join(),
     );
+  }
+
+  void _markRouteToMap({
+    required List<({double latitude, double longitude})> positions,
+  }) {
+    mapController?.evaluateJavascript(
+      source: [
+        "window.markRoute([",
+        positions
+            .map(
+              (position) =>
+                  "{ lat: ${position.latitude}, lng: ${position.longitude} }",
+            )
+            .join(","),
+        "]);",
+      ].join(),
+    );
+  }
+
+  void _onNearbyPlacePopupButtonClicked({required PlaceType placeType}) async {
+    setState(() {
+      _shouldShowNearbyPlacePopup = false;
+    });
+
+    final position = await determinePosition();
+
+    widget.vm.selectPlaceType(
+      placeType: placeType,
+      latitude: position.latitude,
+      longitude: position.longitude,
+    );
+
+    _navigatorKey.currentState?.pushNamed("/nearby-place");
   }
 }

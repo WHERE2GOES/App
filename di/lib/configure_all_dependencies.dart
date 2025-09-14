@@ -4,6 +4,7 @@ import 'package:di/configure_env.dart';
 import 'package:home/di/configure_dependencies.dart' as configureHome;
 import 'package:login/di/configure_dependencies.dart' as configureLogin;
 import 'package:data/di/configure_dependencies.dart' as configureData;
+import 'package:navigation/di/configure_dependencies.dart' as configureNavigation;
 
 Future<void> configureAllDependencies() async {
   await configureEnv();
@@ -11,4 +12,5 @@ Future<void> configureAllDependencies() async {
   await configureData.configureDependencies();
   await configureHome.configureDependencies();
   await configureLogin.configureDependencies();
+  await configureNavigation.configureDependencies();
 }

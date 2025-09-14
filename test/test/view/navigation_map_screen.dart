@@ -50,26 +50,21 @@ class _TestAppState extends State<_TestApp> {
           (
             description: "올리브영에서 직진",
             routeGuidanceType: RouteGuidanceType.straight,
-            distance: 150,
           ),
           (
             description: "올리브영에서 우회전",
             routeGuidanceType: RouteGuidanceType.turnRight,
-            distance: 150,
           ),
           (
             description: "올리브영 방면으로 횡단보도 건너기",
             routeGuidanceType: RouteGuidanceType.crosswalk,
-            distance: 150,
           ),
           (
             description: "올리브영에서 우회전",
             routeGuidanceType: RouteGuidanceType.turnRight,
-            distance: 150,
           ),
         ],
         onTimerClicked: () {},
-        onBackButtonClicked: () {},
         onMenuButtonClicked: () {},
         onEmergencyButtonClicked: () {},
         onGoToCurrentLocationButtonClicked: () {},

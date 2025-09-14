@@ -15,15 +15,22 @@ extension OpenapiExtensions on Openapi {
     } on DioException catch (e) {
       if (e.response?.statusCode != 401) rethrow;
 
+      try {
       final rt = await authPreference.refreshToken;
       if (rt == null) throw Exception("No refresh token found");
 
       final response = await getTokenControllerApi().makeNewToken(body: rt);
 
-      authPreference.setRefreshToken(response.data!.data!.refreshToken!);
-      authPreference.setAccessToken(response.data!.data!.accessToken!);
+      await authPreference.setRefreshToken(response.data!.data!.refreshToken!);
+      await authPreference.setAccessToken(response.data!.data!.accessToken!);
 
       return await action(response.data!.data!.accessToken!);
+      } on DioException catch (e) {
+        if (e.response?.statusCode != 401) rethrow;
+
+        await authPreference.clear();
+        throw NotLoggedInException();
+      }
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:design/theme/theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:navigation/models/place_category_button_prop.dart';
 import 'package:navigation/models/place_prop.dart';
+import 'package:navigation/models/place_type.dart';
 
 final _animationDuration = const Duration(milliseconds: 100);
 
@@ -10,14 +11,14 @@ class NavigationNearbyPlaceScreen extends StatefulWidget {
   const NavigationNearbyPlaceScreen({
     super.key,
     required this.placeCagetoryButtons,
-    required this.selectedPlaceCategoryIndex,
+    required this.selectedPlaceType,
     required this.places,
     required this.shouldShowLoadingIndicatorAtBottom,
     required this.onLastPlaceRendered,
   });
 
   final List<PlaceCategoryButtonProp> placeCagetoryButtons;
-  final int selectedPlaceCategoryIndex;
+  final PlaceType? selectedPlaceType;
   final List<PlaceProp> places;
   final bool shouldShowLoadingIndicatorAtBottom;
   final VoidCallback onLastPlaceRendered;
@@ -55,7 +56,7 @@ class _NavigationNearbyPlaceScreenState
     return Row(
       spacing: 9.77,
       children: widget.placeCagetoryButtons.mapIndexed((index, e) {
-        final isSelected = index == widget.selectedPlaceCategoryIndex;
+        final isSelected = widget.selectedPlaceType?.index == index;
 
         return Expanded(
           child: Stack(
@@ -144,146 +145,149 @@ class _NavigationNearbyPlaceScreenState
 
         final place = widget.places[index];
 
-        return Container(
-          decoration: BoxDecoration(
-            color: place.isHighligted ? Colors.white : Color(0xFFF1F1F1),
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: ThemeColors.grey800, width: 0.6),
-          ),
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 9.25),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 11.98),
-                    child: Container(
-                      width: 65.27,
-                      height: 26.55,
-                      decoration: BoxDecoration(
-                        color: place.isHighligted
-                            ? ThemeColors.highlightedRed
-                            : ThemeColors.grey300,
-                        borderRadius: BorderRadius.circular(3.56),
-                        border: Border.all(
+        return GestureDetector(
+          onTap: place.onClicked,
+          child: Container(
+            decoration: BoxDecoration(
+              color: place.isHighligted ? Colors.white : Color(0xFFF1F1F1),
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: ThemeColors.grey800, width: 0.6),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 9.25),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 11.98),
+                      child: Container(
+                        width: 65.27,
+                        height: 26.55,
+                        decoration: BoxDecoration(
+                          color: place.isHighligted
+                              ? ThemeColors.highlightedRed
+                              : ThemeColors.grey300,
+                          borderRadius: BorderRadius.circular(3.56),
+                          border: Border.all(
+                            color: ThemeColors.grey800,
+                            width: 0.6,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "${place.distance}M",
+                            style: TextStyle(
+                              color: place.isHighligted
+                                  ? Colors.white
+                                  : ThemeColors.grey800,
+                              fontSize: 12.83,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 11.15),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 11.86),
+                      child: Text(
+                        place.name,
+                        style: const TextStyle(
                           color: ThemeColors.grey800,
-                          width: 0.6,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      child: Center(
-                        child: Text(
-                          "${place.distance}M",
-                          style: TextStyle(
-                            color: place.isHighligted
-                                ? Colors.white
-                                : ThemeColors.grey800,
-                            fontSize: 12.83,
-                            fontWeight: FontWeight.w600,
+                    ),
+                    const SizedBox(height: 11.86),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 11.98),
+                      child: Row(
+                        spacing: 5.68,
+                        children: [
+                          Container(
+                            width: 34.95,
+                            height: 34.95,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: place.isHighligted
+                                  ? ThemeColors.pastelYellow
+                                  : ThemeColors.grey300,
+                              border: Border.all(
+                                color: ThemeColors.grey800,
+                                width: 0.6,
+                              ),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                switch (place.placeDetailIcon) {
+                                  PlaceDetailIcon.human =>
+                                    "assets/images/ic_human.png",
+                                  PlaceDetailIcon.pin =>
+                                    "assets/images/ic_pin.png",
+                                },
+                                package: "navigation",
+                                width: double.infinity,
+                              ),
+                            ),
                           ),
-                        ),
+                          Text(
+                            switch (place.placeClickingBahaviorText) {
+                              PlaceClickingBahaviorText.viewLocation =>
+                                "위치보기",
+                              PlaceClickingBahaviorText.findRoute => "길찾기",
+                            },
+                            style: TextStyle(
+                              color: ThemeColors.grey800.withValues(alpha: 0.66),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 11.15),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 11.86),
-                    child: Text(
-                      place.name,
-                      style: const TextStyle(
-                        color: ThemeColors.grey800,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 11.86),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 11.98),
+                    const SizedBox(height: 9.45),
+                  ],
+                ),
+                Positioned(
+                  right: 10,
+                  bottom: 8.9,
+                  child: GestureDetector(
+                    onTap: place.onLikeButtonClicked,
                     child: Row(
-                      spacing: 5.68,
+                      spacing: 2.44,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Container(
-                          width: 34.95,
-                          height: 34.95,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: place.isHighligted
-                                ? ThemeColors.pastelYellow
-                                : ThemeColors.grey300,
-                            border: Border.all(
-                              color: ThemeColors.grey800,
-                              width: 0.6,
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              switch (place.placeDetailIcon) {
-                                PlaceDetailIcon.human =>
-                                  "assets/images/ic_human.png",
-                                PlaceDetailIcon.pin =>
-                                  "assets/images/ic_pin.png",
-                              },
-                              package: "navigation",
-                              width: double.infinity,
-                            ),
-                          ),
+                        Image.asset(
+                          "assets/images/ic_heart.png",
+                          package: "navigation",
+                          width: 19.03,
+                          color: place.isLiked
+                              ? ThemeColors.highlightedRed
+                              : ThemeColors.grey800,
+                          colorBlendMode: BlendMode.srcIn,
                         ),
-                        Text(
-                          switch (place.placeClickingBahaviorText) {
-                            PlaceClickingBahaviorText.viewLocation =>
-                              "위치보기",
-                            PlaceClickingBahaviorText.findRoute => "길찾기",
-                          },
-                          style: TextStyle(
-                            color: ThemeColors.grey800.withValues(alpha: 0.66),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
+                        Container(
+                          constraints: const BoxConstraints(minWidth: 26),
+                          child: Text(
+                            place.likeCount.toString(),
+                            style: TextStyle(
+                              color: place.isLiked
+                                  ? ThemeColors.highlightedRed
+                                  : ThemeColors.grey800,
+                              fontSize: 15.57,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.3,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 9.45),
-                ],
-              ),
-              Positioned(
-                right: 10,
-                bottom: 8.9,
-                child: GestureDetector(
-                  onTap: place.onLikeButtonClicked,
-                  child: Row(
-                    spacing: 2.44,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        "assets/images/ic_heart.png",
-                        package: "navigation",
-                        width: 19.03,
-                        color: place.isLiked
-                            ? ThemeColors.highlightedRed
-                            : ThemeColors.grey800,
-                        colorBlendMode: BlendMode.srcIn,
-                      ),
-                      Container(
-                        constraints: const BoxConstraints(minWidth: 26),
-                        child: Text(
-                          place.likeCount.toString(),
-                          style: TextStyle(
-                            color: place.isLiked
-                                ? ThemeColors.highlightedRed
-                                : ThemeColors.grey800,
-                            fontSize: 15.57,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

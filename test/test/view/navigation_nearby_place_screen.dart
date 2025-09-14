@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:navigation/models/place_prop.dart';
+import 'package:navigation/models/place_type.dart';
 import 'package:navigation/screens/navigation_nearby_place_screen.dart';
 
 void main() {
@@ -49,7 +50,7 @@ class _TestAppState extends State<_TestApp> {
             },
           ),
         ],
-        selectedPlaceCategoryIndex: _selectedPlaceCategoryIndex,
+        selectedPlaceType: PlaceType.values[_selectedPlaceCategoryIndex],
         places: [
           (
             distance: 75,

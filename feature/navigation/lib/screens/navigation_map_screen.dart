@@ -19,7 +19,6 @@ class NavigationMapScreen extends StatefulWidget {
     required this.destinationName,
     required this.routeGuidanceItems,
     required this.onTimerClicked,
-    required this.onBackButtonClicked,
     required this.onMenuButtonClicked,
     required this.onEmergencyButtonClicked,
     required this.onGoToCurrentLocationButtonClicked,
@@ -31,9 +30,8 @@ class NavigationMapScreen extends StatefulWidget {
   final ({List<NearbyPlacePopupButtonProp> buttons, VoidCallback onDismissed})?
   nearbyPlacePopup;
   final String destinationName;
-  final List<RouteGuidanceItemProp> routeGuidanceItems;
+  final List<RouteGuidanceItemProp>? routeGuidanceItems;
   final VoidCallback onTimerClicked;
-  final VoidCallback onBackButtonClicked;
   final VoidCallback onMenuButtonClicked;
   final VoidCallback onEmergencyButtonClicked;
   final VoidCallback onGoToCurrentLocationButtonClicked;
@@ -131,14 +129,6 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
             child: Stack(
               alignment: Alignment.topCenter,
               children: [
-                Positioned(
-                  left: 0,
-                  child: _buildIconButton(
-                    iconAsset: "assets/images/ic_left_triangle_arrow.png",
-                    backgroundColor: Colors.white,
-                    onClicked: widget.onBackButtonClicked,
-                  ),
-                ),
                 GestureDetector(
                   key: _timerKey,
                   onTap: widget.onTimerClicked,
@@ -228,6 +218,9 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
   }
 
   Widget _buildNavigatingBottomSheetContent() {
+    final routeGuidanceItems = widget.routeGuidanceItems;
+    if (routeGuidanceItems == null) return const SizedBox.shrink();
+
     return CustomBottomSheet(
       maxHeight: MediaQuery.of(context).size.height * 0.75,
       minHeight: MediaQuery.of(context).size.height * 0.25,
@@ -274,7 +267,7 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 11.77),
               itemBuilder: (context, index) {
-                final item = widget.routeGuidanceItems[index];
+                final item = routeGuidanceItems[index];
 
                 return Stack(
                   children: [
@@ -336,20 +329,6 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                right: 10.11,
-                                bottom: 3.62,
-                              ),
-                              child: Text(
-                                "${item.distance}m",
-                                style: const TextStyle(
-                                  color: ThemeColors.pastelYellow,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -381,7 +360,7 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
               separatorBuilder: (context, index) {
                 return const SizedBox(height: 6.46);
               },
-              itemCount: widget.routeGuidanceItems.length,
+              itemCount: routeGuidanceItems.length,
             ),
           ),
         ],

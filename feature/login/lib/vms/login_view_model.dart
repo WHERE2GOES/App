@@ -20,7 +20,9 @@ class LoginViewModel extends ChangeNotifier {
 
   LoginViewModel({required this.authRepository, required this.userRepository});
 
-  Map<TermsType, ({String html, bool isAgreed})>? terms;
+  Map<TermsType, ({String html, bool isAgreed})?> terms = {
+    for (final termsType in TermsType.values) termsType: null,
+  };
   List<({PreferenceQuestionEntity question, int? selectedOptionIndex})>?
   preferenceQuestions;
 
@@ -59,21 +61,24 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<void> loadTermsHtml({required TermsType termsType}) async {
-    terms = null;
+    terms[termsType] = null;
     notifyListeners();
 
     final result = await userRepository.getTermsHtml(termsType: termsType);
 
     if (result is Success<String>) {
-      terms![termsType] = (html: result.data, isAgreed: false);
+      terms[termsType] = (html: result.data, isAgreed: false);
       notifyListeners();
     }
   }
 
-  Future<void> agreeTerms({required TermsType termsType, required bool isAgreed}) async {
-    final terms = this.terms?[termsType];
+  Future<void> agreeTerms({
+    required TermsType termsType,
+    required bool isAgreed,
+  }) async {
+    final terms = this.terms[termsType];
     if (terms == null) return;
-    this.terms![termsType] = (html: terms.html, isAgreed: isAgreed);
+    this.terms[termsType] = (html: terms.html, isAgreed: isAgreed);
     notifyListeners();
   }
 
@@ -109,7 +114,10 @@ class LoginViewModel extends ChangeNotifier {
                     ),
                   )
                   .toList(),
-          agreedTermsIds: [],
+          agreedTerms: terms.entries
+              .where((e) => e.value?.isAgreed ?? false)
+              .map((e) => e.key)
+              .toList(),
         ),
       );
 

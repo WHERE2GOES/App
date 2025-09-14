@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:built_collection/built_collection.dart';
 import 'package:core/common/result.dart';
 import 'package:core/domain/user/model/course_preference_type.dart';
@@ -49,17 +47,9 @@ class UserRepositoryImpl implements UserRepository {
   Future<Result<List<PreferenceQuestionEntity>>>
   getPreferenceQuestions() async {
     try {
-      final questions = await openapi.callWithAuth(
-        authPreference: authPreference,
-        action: (accessToken) async {
-          final api = openapi.getSurveyControllerApi();
-          final response = await api.questions(
-            headers: {"Authorization": "Bearer $accessToken"},
-          );
-
-          return response.data!.toList();
-        },
-      );
+      final api = openapi.getSurveyControllerApi();
+      final response = await api.questions();
+      final questions = response.data!.toList();
 
       return Success(
         data: questions
@@ -79,8 +69,28 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<Result<CoursePreferenceType>> getCoursePreferenceType() async {
-    // TODO: implement getCoursePreferenceType
-    return Success(data: CoursePreferenceType.values[Random().nextInt(8)]);
+    try {
+      final response = await openapi.callWithAuth(
+        authPreference: authPreference,
+        action: (accessToken) async {
+          final api = openapi.getSurveyControllerApi();
+          final response = await api.getSurveyTheme(
+            headers: {"Authorization": "Bearer $accessToken"},
+          );
+
+          return response.data!.data!.themeName;
+        },
+      );
+
+      return Success(
+        data: CoursePreferenceType.values.singleWhere(
+          (e) => e.name == response,
+          orElse: () => throw Exception("가능하지 않은 코스 선호 타입입니다."),
+        ),
+      );
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
   }
 
   @override
@@ -133,6 +143,26 @@ class UserRepositoryImpl implements UserRepository {
 
       await updatePreference(
         request: PreferenceUpdateRequest(preferences: request.preferences),
+      );
+
+      await openapi.callWithAuth(
+        authPreference: authPreference,
+        action: (accessToken) async {
+          final api = openapi.getTermsAgreementControllerApi();
+          final body = O.TermsAgreementRequest(
+            (b) => b
+              ..agreedTermsIds = ListBuilder(
+                request.agreedTerms.map((e) => e.index + 1),
+              ),
+          );
+
+          final response = await api.agreeToTerms(
+            headers: {"Authorization": "Bearer $accessToken"},
+            termsAgreementRequest: body,
+          );
+
+          return response.statusCode == 200;
+        },
       );
 
       return Success(data: null);

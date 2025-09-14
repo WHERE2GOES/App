@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:core/domain/course/model/course_property_type.dart';
 import 'package:core/domain/user/model/course_preference_type.dart';
 import 'package:design/theme/theme_colors.dart';
+import 'package:design/util/navigation_bar_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home/models/course_spot.dart';
@@ -112,6 +113,7 @@ class _HomeAppState extends State<HomeApp> {
               typeName: coursePreferenceType.name,
               onClicked: () {
                 widget.vm.loadFitCourses();
+                NavigationBarHandler.visibility.hide();
                 _navigatorKey.currentState?.pushNamed('/fit');
               },
             )
@@ -230,6 +232,9 @@ class _HomeAppState extends State<HomeApp> {
   void _back() {
     if (_navigatorKey.currentState?.canPop() ?? false) {
       _navigatorKey.currentState?.pop();
+      if (_navigatorKey.currentState?.canPop() != true) {
+        NavigationBarHandler.visibility.show();
+      }
     } else {
       widget.onBack();
     }
@@ -237,6 +242,7 @@ class _HomeAppState extends State<HomeApp> {
 
   void _onCourseClicked({required int courseId}) {
     widget.vm.selectCourse(courseId: courseId);
+    NavigationBarHandler.visibility.hide();
     _navigatorKey.currentState
         ?.pushNamed('/course')
         .then((value) => widget.vm.unselectCourse());

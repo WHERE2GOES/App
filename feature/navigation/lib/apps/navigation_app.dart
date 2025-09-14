@@ -48,11 +48,16 @@ class _NavigationAppState extends State<NavigationApp> {
         });
 
     widget.vm.startNavigation().then((_) {
-      _markRouteToMap(
-        positions: widget.vm.route!
-            .map((e) => (latitude: e.latitude, longitude: e.longitude))
-            .toList(),
-      );
+      final route =
+          widget.vm.routeToPlace
+              ?.map((e) => (latitude: e.latitude, longitude: e.longitude))
+              .toList() ??
+          widget.vm.route
+              ?.map((e) => (latitude: e.latitude, longitude: e.longitude))
+              .toList();
+
+      if (route == null) return;
+      _markRouteToMap(positions: route);
     });
   }
 
@@ -224,10 +229,7 @@ class _NavigationAppState extends State<NavigationApp> {
     );
   }
 
-  void _moveMap({
-    required double latitude,
-    required double longitude,
-  }) {
+  void _moveMap({required double latitude, required double longitude}) {
     mapController?.evaluateJavascript(
       source: [
         "window.panMapTo(",
@@ -282,10 +284,7 @@ class _NavigationAppState extends State<NavigationApp> {
           place: place,
         )
         .catchError((_) {
-          _moveMap(
-            latitude: place.latitude,
-            longitude: place.longitude,
-          );
+          _moveMap(latitude: place.latitude, longitude: place.longitude);
         })
         .then((_) {
           _markRouteToMap(

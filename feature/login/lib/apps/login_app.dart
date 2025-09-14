@@ -56,7 +56,7 @@ class _LoginAppState extends State<LoginApp> {
           builder: (context) {
             return BackButtonListener(
               onBackButtonPressed: () async {
-                widget.onBack();
+                _back();
                 return true;
               },
               child: ListenableBuilder(
@@ -112,14 +112,8 @@ class _LoginAppState extends State<LoginApp> {
     );
   }
 
-  void _onTermsClicked(termsType) {
-    widget.vm.loadTermsHtml(termsType: termsType);
-
-    _navigatorKey.currentState?.pushNamed("/terms_view", arguments: termsType);
-  }
-
   Widget _buildLoginTermsViewScreen({required TermsType termsType}) {
-    return LoginTermsViewScreen(html: widget.vm.terms?[termsType]?.html);
+    return LoginTermsViewScreen(html: widget.vm.terms[termsType]?.html);
   }
 
   Widget _buildLoginPersonalInfoScreen() {
@@ -208,6 +202,11 @@ class _LoginAppState extends State<LoginApp> {
         _navigatorKey.currentState?.pushNamed("/terms_agreement");
         break;
     }
+  }
+
+  void _onTermsClicked(termsType) {
+    widget.vm.loadTermsHtml(termsType: termsType);
+    _navigatorKey.currentState?.pushNamed("/terms_view", arguments: termsType);
   }
 
   void _onSelectPictureButtonClicked() async {

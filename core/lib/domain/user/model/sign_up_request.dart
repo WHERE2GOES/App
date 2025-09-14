@@ -1,3 +1,4 @@
+import 'package:core/domain/user/model/terms_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'sign_up_request.freezed.dart';
@@ -7,6 +8,6 @@ abstract class SignUpRequest with _$SignUpRequest {
   const factory SignUpRequest({
     required String nickname,
     required Iterable<({int questionId, int selectedOptionIndex})> preferences,
-    required Iterable<int> agreedTermsIds,
+    required Iterable<TermsType> agreedTerms,
   }) = _SignUpRequest;
 }

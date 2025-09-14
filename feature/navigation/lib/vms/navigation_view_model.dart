@@ -74,19 +74,25 @@ class NavigationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> selectPlace({required PlaceEntity place}) async {
+  Future<void> selectPlace({
+    required double latitude,
+    required double longitude,
+    required PlaceEntity place
+  }) async {
     selectedPlace = place;
     routeToPlace = null;
     notifyListeners();
 
     final routeResponse = await geolocationRepository.getRoute(
-      startLatitude: place.latitude,
-      startLongitude: place.longitude,
+      startLatitude: latitude,
+      startLongitude: longitude,
       endLatitude: place.latitude,
       endLongitude: place.longitude,
     );
 
-    if (routeResponse is! Success<List<RoutePointEntity>>) return;
+    if (routeResponse is! Success<List<RoutePointEntity>>) {
+      throw Exception("Failed to get route");
+    };
 
     routeToPlace = routeResponse.data;
     notifyListeners();

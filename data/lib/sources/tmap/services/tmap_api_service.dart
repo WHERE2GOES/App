@@ -1,4 +1,5 @@
 import 'package:data/sources/tmap/objects/pedestrian_route_response.dart';
+import 'package:data/sources/tmap/objects/reverse_geocoding_response.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 
@@ -19,5 +20,13 @@ abstract class TmapApiService {
     @Field("reqCoordType") String reqCoordType = "WGS84GEO",
     @Field("startName") required String startName,
     @Field("endName") required String endName,
+  });
+
+  @GET("/tmap/geo/reversegeocoding?version=1")
+  @FormUrlEncoded()
+  Future<ReverseGeocodingResponse> getReverseGeocoding({
+    @Header("appKey") required String appKey,
+    @Query("lat") required double lat,
+    @Query("lon") required double lon,
   });
 }

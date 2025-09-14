@@ -5,6 +5,7 @@ part 'address_entity.freezed.dart';
 @freezed
 abstract class AddressEntity with _$AddressEntity {
   const factory AddressEntity({
-    required String address,
+    required String city,
+    required String full,
   }) = _AddressEntity;
 }

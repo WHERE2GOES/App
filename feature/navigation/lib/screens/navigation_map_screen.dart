@@ -88,11 +88,11 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _buildIconButton(
-                                  iconAsset: "assets/images/ic_warning.png",
-                                  backgroundColor: ThemeColors.grey800,
-                                  onClicked: widget.onEmergencyButtonClicked,
-                                ),
+                                // _buildIconButton(
+                                //   iconAsset: "assets/images/ic_warning.png",
+                                //   backgroundColor: ThemeColors.grey800,
+                                //   onClicked: widget.onEmergencyButtonClicked,
+                                // ),
                                 _buildIconButton(
                                   iconAsset: "assets/images/ic_location.png",
                                   backgroundColor: Colors.white,
@@ -129,31 +129,31 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
             child: Stack(
               alignment: Alignment.topCenter,
               children: [
-                GestureDetector(
-                  key: _timerKey,
-                  onTap: widget.onTimerClicked,
-                  child: Container(
-                    width: 97.36,
-                    height: 37.24,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: ThemeColors.pastelYellow,
-                      border: Border.all(
-                        color: ThemeColors.grey800,
-                        width: 0.6,
-                      ),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      "${widget.totalTravelTime.inHours.toString().padLeft(2, "0")}:${widget.totalTravelTime.inMinutes.remainder(60).toString().padLeft(2, "0")}",
-                      style: const TextStyle(
-                        fontSize: 20.73,
-                        fontWeight: FontWeight.w600,
-                        color: ThemeColors.grey800,
-                      ),
-                    ),
-                  ),
-                ),
+                // GestureDetector(
+                //   key: _timerKey,
+                //   onTap: widget.onTimerClicked,
+                //   child: Container(
+                //     width: 97.36,
+                //     height: 37.24,
+                //     alignment: Alignment.center,
+                //     decoration: BoxDecoration(
+                //       color: ThemeColors.pastelYellow,
+                //       border: Border.all(
+                //         color: ThemeColors.grey800,
+                //         width: 0.6,
+                //       ),
+                //       borderRadius: BorderRadius.circular(5),
+                //     ),
+                //     child: Text(
+                //       "${widget.totalTravelTime.inHours.toString().padLeft(2, "0")}:${widget.totalTravelTime.inMinutes.remainder(60).toString().padLeft(2, "0")}",
+                //       style: const TextStyle(
+                //         fontSize: 20.73,
+                //         fontWeight: FontWeight.w600,
+                //         color: ThemeColors.grey800,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Positioned(
                   right: 0,
                   child: _buildIconButton(
@@ -317,12 +317,14 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
                                         width: 28,
                                       ),
                                     ),
-                                    Text(
-                                      item.description,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w300,
+                                    Expanded(
+                                      child: Text(
+                                        item.description,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                        ),
                                       ),
                                     ),
                                   ],

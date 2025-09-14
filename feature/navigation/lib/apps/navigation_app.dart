@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/domain/geolocation/model/place_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:geolocator/geolocator.dart';
@@ -166,21 +167,7 @@ class _NavigationAppState extends State<NavigationApp> {
                       PlaceClickingBahaviorText.findRoute,
                   likeCount: 100,
                   isLiked: false,
-                  onClicked: () {
-                    widget.vm.selectPlace(place: e).then((_) {
-                      _markRouteToMap(
-                        positions: widget.vm.routeToPlace!
-                            .map(
-                              (e) => (
-                                latitude: e.latitude,
-                                longitude: e.longitude,
-                              ),
-                            )
-                            .toList(),
-                      );
-                    });
-                    _back();
-                  },
+                  onClicked: () => _onNearbyPlaceSelected(place: e),
                   onLikeButtonClicked: () {},
                 ),
               )
@@ -231,13 +218,22 @@ class _NavigationAppState extends State<NavigationApp> {
 
   void _moveMapToCurrentPosition() async {
     final currentLocation = await determinePosition();
+    _moveMap(
+      latitude: currentLocation.latitude,
+      longitude: currentLocation.longitude,
+    );
+  }
 
+  void _moveMap({
+    required double latitude,
+    required double longitude,
+  }) {
     mapController?.evaluateJavascript(
       source: [
         "window.panMapTo(",
-        currentLocation.latitude.toString(),
+        latitude.toString(),
         ",",
-        currentLocation.longitude.toString(),
+        longitude.toString(),
         ");",
       ].join(),
     );
@@ -246,18 +242,18 @@ class _NavigationAppState extends State<NavigationApp> {
   void _markRouteToMap({
     required List<({double latitude, double longitude})> positions,
   }) {
-    mapController?.evaluateJavascript(
-      source: [
-        "window.markRoute([",
-        positions
-            .map(
-              (position) =>
-                  "{ lat: ${position.latitude}, lng: ${position.longitude} }",
-            )
-            .join(","),
-        "]);",
-      ].join(),
-    );
+    final script = [
+      "window.markRoute([",
+      positions
+          .map(
+            (position) =>
+                "{ lat: ${position.latitude}, lng: ${position.longitude} }",
+          )
+          .join(","),
+      "]);",
+    ].join();
+
+    mapController?.evaluateJavascript(source: script);
   }
 
   void _onNearbyPlacePopupButtonClicked({required PlaceType placeType}) async {
@@ -274,5 +270,31 @@ class _NavigationAppState extends State<NavigationApp> {
     );
 
     _navigatorKey.currentState?.pushNamed("/nearby-place");
+  }
+
+  void _onNearbyPlaceSelected({required PlaceEntity place}) async {
+    final position = await determinePosition();
+
+    widget.vm
+        .selectPlace(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          place: place,
+        )
+        .catchError((_) {
+          _moveMap(
+            latitude: place.latitude,
+            longitude: place.longitude,
+          );
+        })
+        .then((_) {
+          _markRouteToMap(
+            positions: widget.vm.routeToPlace!
+                .map((e) => (latitude: e.latitude, longitude: e.longitude))
+                .toList(),
+          );
+        });
+
+    _navigatorKey.currentState?.pushNamed("/");
   }
 }

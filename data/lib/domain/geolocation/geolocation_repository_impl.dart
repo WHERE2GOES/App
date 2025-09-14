@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:core/common/result.dart';
 import 'package:core/domain/geolocation/geolocation_repository.dart';
 import 'package:core/domain/geolocation/model/address_entity.dart';
@@ -15,11 +17,13 @@ import 'package:openapi/openapi.dart';
 class GeolocationRepositoryImpl implements GeolocationRepository {
   final Openapi openapi;
   final AuthPreference authPreference;
+  final String tmapApiKey;
   final TmapApiService tmapApiService;
 
   const GeolocationRepositoryImpl({
     required this.openapi,
     required this.authPreference,
+    @Named("tmap_api_key") required this.tmapApiKey,
     required this.tmapApiService,
   });
 
@@ -28,8 +32,22 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
     required double latitude,
     required double longitude,
   }) async {
-    // TODO: implement getAddress
-    return Failure(exception: Exception("Not implemented"));
+    try {
+      final response = await tmapApiService.getReverseGeocoding(
+        lat: latitude,
+        lon: longitude,
+        appKey: tmapApiKey,
+      );
+
+      return Success(
+        data: AddressEntity(
+          city: response.addressInfo!.cityDo!,
+          full: response.addressInfo!.fullAddress!,
+        ),
+      );
+    } on Exception catch (e) {
+      return Failure(exception: e);
+    }
   }
 
   @override
@@ -45,59 +63,69 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
   Future<Result<List<PlaceEntity>>> getNearbyPlaces({
     required double latitude,
     required double longitude,
-    PlaceCategory? placeCategory,
+    required PlaceCategory placeCategory,
     int radius = 1000,
     int limit = 50,
   }) async {
     try {
-      final courseId = await openapi.callWithAuth(
+      final address = await getAddress(
+        latitude: latitude,
+        longitude: longitude,
+      );
+
+      if (address is! Success<AddressEntity>) throw Exception("주소를 찾을 수 없습니다.");
+
+      final response = await openapi.callWithAuth(
         authPreference: authPreference,
         action: (accessToken) async {
-          final api = openapi.getCourseControllerApi();
-          final response = await api.getCurrentCourse(
-            headers: {"Authorization": "Bearer $accessToken"},
-          );
+          final api = openapi.getFestivalControllerApi();
 
-          return response.data?.data?.courseId;
+          final response = switch (placeCategory) {
+            PlaceCategory.rest => await api.getHotel(
+              areaName: address.data.city,
+              headers: {"Authorization": "Bearer $accessToken"},
+            ),
+            PlaceCategory.restaurant => await api.getFood(
+              areaName: address.data.city,
+              headers: {"Authorization": "Bearer $accessToken"},
+            ),
+            _ => throw Exception("Not implemented"),
+          };
+
+          return response.data!.data!.asList();
         },
       );
 
-      if (courseId == null) throw Exception("코스 ID를 찾을 수 없습니다.");
+      final result = response
+          .map(
+            (e) => PlaceEntity(
+              name: e.title!,
+              category: placeCategory,
+              latitude: double.parse(e.mapy!),
+              longitude: double.parse(e.mapx!),
+            ),
+          )
+          .toList();
 
-      final places = await openapi.callWithAuth(
-        authPreference: authPreference,
-        action: (accessToken) async {
-          final api = openapi.getCourseControllerApi();
-          final response = await api.getCoursePlaces(
-            id: courseId,
-            headers: {"Authorization": "Bearer $accessToken"},
-          );
-          return response.data?.data?.places;
-        },
+      result.sort(
+        (a, b) =>
+            getDistance(
+                  aLatitude: a.latitude,
+                  aLongitude: a.longitude,
+                  bLatitude: latitude,
+                  bLongitude: longitude,
+                ) <
+                getDistance(
+                  aLatitude: b.latitude,
+                  aLongitude: b.longitude,
+                  bLatitude: latitude,
+                  bLongitude: longitude,
+                )
+            ? 1
+            : -1,
       );
 
-      return Success(
-        data:
-            places
-                ?.map(
-                  (e) => PlaceEntity(
-                    name: e.name!,
-                    category: switch (e.category) {
-                      "화장실" => PlaceCategory.toilet,
-                      "숙박업소" => PlaceCategory.rest,
-                      "음식점" => PlaceCategory.restaurant,
-                      _ => PlaceCategory.other,
-                    },
-                    latitude: e.latitude!,
-                    longitude: e.longitude!,
-                  ),
-                )
-                .where(
-                  (e) => placeCategory == null || e.category == placeCategory,
-                )
-                .toList() ??
-            [],
-      );
+      return Success(data: result);
     } on Exception catch (e) {
       return Failure(exception: e);
     }
@@ -112,30 +140,30 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
   }) async {
     try {
       final response = await tmapApiService.getPedestrianRoute(
-        startX: startLatitude,
-        startY: startLongitude,
-        endX: endLatitude,
-        endY: endLongitude,
-        appKey: '',
-        startName: '',
-        endName: '',
+        startX: startLongitude,
+        startY: startLatitude,
+        endX: endLongitude,
+        endY: endLatitude,
+        appKey: tmapApiKey,
+        startName: 'start',
+        endName: 'end',
       );
 
       final route = response.features
           .map((e) {
-            if (e.geometry.type != "LineString") {
+            if (e.geometry.type == "LineString") {
               return e.geometry.coordinates.map(
                 (e) => RoutePointEntity(
-                  latitude: e[0],
-                  longitude: e[1],
+                  latitude: e[1],
+                  longitude: e[0],
                   description: null,
                 ),
               );
             } else if (e.geometry.type == "Point") {
               return [
                 RoutePointEntity(
-                  latitude: e.geometry.coordinates[0],
-                  longitude: e.geometry.coordinates[1],
+                  latitude: e.geometry.coordinates[1],
+                  longitude: e.geometry.coordinates[0],
                   description: e.properties.description,
                 ),
               ];
@@ -151,5 +179,16 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
     } on Exception catch (e) {
       return Failure(exception: e);
     }
+  }
+
+  double getDistance({
+    required double aLatitude,
+    required double aLongitude,
+    required double bLatitude,
+    required double bLongitude,
+  }) {
+    return sqrt(
+      pow(aLatitude - bLatitude, 2) + pow(aLongitude - bLongitude, 2),
+    );
   }
 }

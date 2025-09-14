@@ -573,6 +573,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  mobile_scanner:
+    dependency: transitive
+    description:
+      name: mobile_scanner
+      sha256: "54005bdea7052d792d35b4fef0f84ec5ddc3a844b250ecd48dc192fb9b4ebc95"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.1"
   mypage:
     dependency: "direct main"
     description:
@@ -608,7 +616,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: b68802b5624e54ca691a684e85e82004e8764ee6
+      resolved-ref: ac7fb9aa0d95b58dca6e10ab437d8a495399cfa5
       url: "https://github.com/WHERE2GOES/Dart-Client"
     source: git
     version: "1.0.0"
@@ -717,7 +725,7 @@ packages:
     source: hosted
     version: "4.7.2"
   reward:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../feature/reward"
       relative: true

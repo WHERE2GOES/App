@@ -6,6 +6,7 @@ import 'package:login/di/configure_dependencies.dart' as configureLogin;
 import 'package:data/di/configure_dependencies.dart' as configureData;
 import 'package:navigation/di/configure_dependencies.dart' as configureNavigation;
 import 'package:mypage/di/configure_dependencies.dart' as configureMyPage;
+import 'package:reward/di/configure_dependencies.dart' as configureReward;
 
 Future<void> configureAllDependencies() async {
   await configureEnv();
@@ -15,4 +16,5 @@ Future<void> configureAllDependencies() async {
   await configureLogin.configureDependencies();
   await configureNavigation.configureDependencies();
   await configureMyPage.configureDependencies();
+  await configureReward.configureDependencies();
 }

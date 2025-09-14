@@ -6,6 +6,7 @@ import 'package:home/apps/home_app.dart';
 import 'package:login/apps/login_app.dart';
 import 'package:mypage/apps/my_page_app.dart';
 import 'package:navigation/apps/navigation_app.dart';
+import 'package:reward/apps/reward_app.dart';
 
 class RouteHandler {
   static VoidCallback? _backHandler;
@@ -53,6 +54,15 @@ class RouteHandler {
         path: '/navigation',
         builder: (context, state) {
           return NavigationApp(vm: GetIt.I(), onBack: RouteHandler.back);
+        },
+      ),
+      GoRoute(
+        path: '/reward',
+        builder: (context, state) {
+          return RewardApp(
+            vm: GetIt.I(),
+            onBack: RouteHandler.back,
+          );
         },
       ),
       GoRoute(

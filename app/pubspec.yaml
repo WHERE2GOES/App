@@ -27,6 +27,8 @@ dependencies:
     path: ../feature/mypage
   navigation:
     path: ../feature/navigation
+  reward:
+    path: ../feature/reward
 
   flutter_dotenv: ^5.2.1
   flutter_svg: ^2.1.0

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:design/theme/theme_colors.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
@@ -94,26 +95,31 @@ class _RewardRoadScreenState extends State<RewardRoadScreen> {
                     alignment: Alignment.center,
                     children: [
                       Row(
-                        children: [first, second, third, fourth]
-                            .map(
-                              (e) => Expanded(
-                                child: _buildLine(
-                                  isCompletedLine:
-                                      e?.type == RewardNodeType.start
-                                      ? null
-                                      : e?.isCompleted,
-                                ),
-                              ),
-                            )
-                            .toList(),
+                        children: [first, second, third, fourth].mapIndexed((
+                          index,
+                          e,
+                        ) {
+                          final line = _buildLine(
+                            isCompletedLine: e?.type == RewardNodeType.start
+                                ? null
+                                : e?.isCompleted,
+                          );
+
+                          return index == 0 || index == 3
+                              ? SizedBox(width: 60, child: line)
+                              : Expanded(child: line);
+                        }).toList(),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildNode(node: first),
-                          _buildNode(node: second),
-                          _buildNode(node: third),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildNode(node: first),
+                            _buildNode(node: second),
+                            _buildNode(node: third),
+                          ],
+                        ),
                       ),
                     ],
                   );

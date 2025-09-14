@@ -49,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
             if (bannerImage != null) FutureImage(
               imageFuture: bannerImage,
               width: double.infinity,
-              height: 120,
               fit: BoxFit.cover,
             ),
             if (widget.courseInProgressCard != null)

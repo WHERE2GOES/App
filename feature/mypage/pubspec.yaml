@@ -16,7 +16,17 @@ dependencies:
   design:
     path: ../../design
 
+  flutter_svg: ^2.2.0
   get_it: ^8.0.3
+  injectable: ^2.5.1
+  url_launcher: ^6.3.2
+  webview_flutter: ^4.13.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
+  build_runner: ^2.5.2
+  injectable_generator: ^2.7.0
+
+flutter:
+  assets:
+    - assets/images/

@@ -1,5 +1,6 @@
 import 'package:app/route_handler.dart';
 import 'package:design/models/custom_navigation_bar_items.dart';
+import 'package:design/util/navigation_bar_handler.dart';
 import 'package:design/widget/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,6 +28,7 @@ class _AppState extends State<App> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       RouteHandler.setBackHandler(_back);
       widget.router.routerDelegate.addListener(_onRouteChanged);
+      NavigationBarHandler.visibility.show();
     });
   }
 
@@ -51,19 +53,22 @@ class _AppState extends State<App> {
         "/home",
         "/navigation",
         "/reward",
-        "/profile",
+        "/mypage",
       ].contains(currentLocation);
 
       return showNavigationBar
           ? CustomNavigationBar(
+              visibility: NavigationBarHandler.visibility,
               currentItem: switch (currentLocation) {
                 "/home" => CustomNavigationBarItems.home,
                 "/navigation" => CustomNavigationBarItems.navigation,
                 "/reward" => CustomNavigationBarItems.reward,
-                "/profile" => CustomNavigationBarItems.profile,
+                "/mypage" => CustomNavigationBarItems.profile,
                 _ => throw UnimplementedError(),
               },
               onItemTapped: (item) {
+                NavigationBarHandler.visibility.show();
+
                 switch (item) {
                   case CustomNavigationBarItems.home:
                     widget.router.go("/home");
@@ -75,7 +80,7 @@ class _AppState extends State<App> {
                     widget.router.go("/reward");
                     break;
                   case CustomNavigationBarItems.profile:
-                    widget.router.go("/profile");
+                    widget.router.go("/mypage");
                     break;
                 }
               },

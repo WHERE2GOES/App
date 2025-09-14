@@ -43,5 +43,7 @@ class AuthPreference {
   Future<void> clear() async {
     await prefs.remove(_accessTokenKey);
     await prefs.remove(_refreshTokenKey);
+    await prefs.remove(_pendingEmailKey);
+    await prefs.remove(_pendingEmailDomainKey);
   }
 }

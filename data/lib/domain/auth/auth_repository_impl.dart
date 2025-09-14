@@ -107,11 +107,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
       if (!isSucceed) throw Exception("Logout failed.");
 
-      await authPreference.clear();
-
       return Success(data: null);
     } on Exception catch (e) {
       return Failure(exception: e);
+    } finally {
+      await authPreference.clear();
     }
   }
 }

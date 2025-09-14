@@ -27,6 +27,8 @@ dependencies:
     path: ../feature/mypage
   navigation:
     path: ../feature/navigation
+  reward:
+    path: ../feature/reward
 
   dio: ^5.8.0+1
   flutter_dotenv: ^5.2.1

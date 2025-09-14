@@ -19,6 +19,8 @@ dependencies:
     path: ../feature/login
   navigation:
     path: ../feature/navigation
+  reward:
+    path: ../feature/reward
   mypage:
     path: ../feature/mypage
   flutter_dotenv: ^5.2.1

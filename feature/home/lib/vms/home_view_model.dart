@@ -80,7 +80,7 @@ class HomeViewModel extends ChangeNotifier {
 
     final result = await courseRepository.getCurrentCourse();
 
-    if (result is Success<CurrentCourseEntity>) {
+    if (result is Success<CurrentCourseEntity?>) {
       currentCourse = result.data;
       notifyListeners();
     }

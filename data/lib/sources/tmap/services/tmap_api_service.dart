@@ -28,5 +28,6 @@ abstract class TmapApiService {
     @Header("appKey") required String appKey,
     @Query("lat") required double lat,
     @Query("lon") required double lon,
+    @Query("simpleNameYn") required String simpleNameYn,
   });
 }

@@ -37,6 +37,7 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
         lat: latitude,
         lon: longitude,
         appKey: tmapApiKey,
+        simpleNameYn: "Y",
       );
 
       return Success(
@@ -73,7 +74,9 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
         longitude: longitude,
       );
 
-      if (address is! Success<AddressEntity>) throw Exception("주소를 찾을 수 없습니다.");
+      final areaName = address is Success<AddressEntity>
+          ? address.data.city
+          : "서울";
 
       final response = await openapi.callWithAuth(
         authPreference: authPreference,
@@ -82,11 +85,11 @@ class GeolocationRepositoryImpl implements GeolocationRepository {
 
           final response = switch (placeCategory) {
             PlaceCategory.rest => await api.getHotel(
-              areaName: address.data.city,
+              areaName: areaName,
               headers: {"Authorization": "Bearer $accessToken"},
             ),
             PlaceCategory.restaurant => await api.getFood(
-              areaName: address.data.city,
+              areaName: areaName,
               headers: {"Authorization": "Bearer $accessToken"},
             ),
             _ => throw Exception("Not implemented"),

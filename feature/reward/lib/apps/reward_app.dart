@@ -125,6 +125,9 @@ class _RewardAppState extends State<RewardApp> {
   void _back() {
     if (_navigatorKey.currentState?.canPop() ?? false) {
       _navigatorKey.currentState?.pop();
+      if (_navigatorKey.currentState?.canPop() != true) {
+        NavigationBarHandler.visibility.show();
+      }
     } else {
       widget.onBack();
     }

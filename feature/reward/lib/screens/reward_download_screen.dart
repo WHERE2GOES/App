@@ -18,49 +18,61 @@ class _RewardDownloadScreenState extends State<RewardDownloadScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: ThemeColors.highlightedRed,
-      child: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: Column(
-                children: [
-                  Text(
-                    "카톡 테마를 다운받아보세요!",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
+      child: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "카톡 테마를 다운받아보세요!",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  Image.asset(
-                    "assets/images/img_trophy_big.png",
-                    package: "reward",
-                    width: 181.74,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: widget.onDownloadButtonClicked,
-            child: Container(
-              color: Colors.white.withValues(alpha: 0.2),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                border: Border.all(color: ThemeColors.grey800, width: 0.6),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Text(
-                "Click",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                    Image.asset(
+                      "assets/images/img_trophy_big.png",
+                      package: "reward",
+                      width: 181.74,
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: GestureDetector(
+                onTap: widget.onDownloadButtonClicked,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    border: Border.all(color: ThemeColors.grey800, width: 0.6),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Click",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

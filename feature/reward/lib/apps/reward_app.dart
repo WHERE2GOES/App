@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:design/util/navigation_bar_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:reward/screens/reward_certification_screen.dart';
 import 'package:reward/screens/reward_download_screen.dart';
@@ -86,7 +87,8 @@ class _RewardAppState extends State<RewardApp> {
       completeButton: certificates?.lastOrNull?.isCompleted == true
           ? (
               onClicked: () {
-                /* TODO */
+                NavigationBarHandler.visibility.hide();
+                _navigatorKey.currentState?.pushNamed("/download");
               },
             )
           : null,

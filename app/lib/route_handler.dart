@@ -1,4 +1,5 @@
 import 'package:app/splash_app.dart';
+import 'package:design/util/navigation_bar_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
@@ -45,6 +46,7 @@ class RouteHandler {
             context.go("/navigation");
           },
           onCourseStarted: () {
+            NavigationBarHandler.visibility.show();
             context.go("/navigation");
           },
           onBack: RouteHandler.back,

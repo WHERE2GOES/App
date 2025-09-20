@@ -19,7 +19,7 @@ class NavigationNearbyPlaceScreen extends StatefulWidget {
 
   final List<PlaceCategoryButtonProp> placeCagetoryButtons;
   final PlaceType? selectedPlaceType;
-  final List<PlaceProp> places;
+  final List<PlaceProp>? places;
   final bool shouldShowLoadingIndicatorAtBottom;
   final VoidCallback onLastPlaceRendered;
 
@@ -120,183 +120,198 @@ class _NavigationNearbyPlaceScreenState
   }
 
   Widget _buildPlaces() {
-    return ListView.separated(
-      padding: EdgeInsets.only(
-        top: 15,
-        bottom: MediaQuery.viewPaddingOf(context).bottom + 15,
-      ),
-      itemBuilder: (context, index) {
-        if (index == widget.places.length) {
-          return Container(
-            padding: const EdgeInsets.all(10),
-            child: const Center(
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(),
-              ),
+    final places = widget.places;
+
+    return places != null
+        ? ListView.separated(
+            padding: EdgeInsets.only(
+              top: 15,
+              bottom: MediaQuery.viewPaddingOf(context).bottom + 15,
             ),
-          );
-        }
-
-        if (index == widget.places.length - 1) {
-          widget.onLastPlaceRendered();
-        }
-
-        final place = widget.places[index];
-
-        return GestureDetector(
-          onTap: place.onClicked,
-          child: Container(
-            decoration: BoxDecoration(
-              color: place.isHighligted ? Colors.white : Color(0xFFF1F1F1),
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(color: ThemeColors.grey800, width: 0.6),
-            ),
-            child: Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 9.25),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 11.98),
-                      child: Container(
-                        width: 65.27,
-                        height: 26.55,
-                        decoration: BoxDecoration(
-                          color: place.isHighligted
-                              ? ThemeColors.highlightedRed
-                              : ThemeColors.grey300,
-                          borderRadius: BorderRadius.circular(3.56),
-                          border: Border.all(
-                            color: ThemeColors.grey800,
-                            width: 0.6,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "${place.distance}M",
-                            style: TextStyle(
-                              color: place.isHighligted
-                                  ? Colors.white
-                                  : ThemeColors.grey800,
-                              fontSize: 12.83,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 11.15),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 11.86),
-                      child: Text(
-                        place.name,
-                        style: const TextStyle(
-                          color: ThemeColors.grey800,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 11.86),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 11.98),
-                      child: Row(
-                        spacing: 5.68,
-                        children: [
-                          Container(
-                            width: 34.95,
-                            height: 34.95,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: place.isHighligted
-                                  ? ThemeColors.pastelYellow
-                                  : ThemeColors.grey300,
-                              border: Border.all(
-                                color: ThemeColors.grey800,
-                                width: 0.6,
-                              ),
-                            ),
-                            child: Center(
-                              child: Image.asset(
-                                switch (place.placeDetailIcon) {
-                                  PlaceDetailIcon.human =>
-                                    "assets/images/ic_human.png",
-                                  PlaceDetailIcon.pin =>
-                                    "assets/images/ic_pin.png",
-                                },
-                                package: "navigation",
-                                width: double.infinity,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            switch (place.placeClickingBahaviorText) {
-                              PlaceClickingBahaviorText.viewLocation =>
-                                "위치보기",
-                              PlaceClickingBahaviorText.findRoute => "길찾기",
-                            },
-                            style: TextStyle(
-                              color: ThemeColors.grey800.withValues(alpha: 0.66),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 9.45),
-                  ],
-                ),
-                Positioned(
-                  right: 10,
-                  bottom: 8.9,
-                  child: GestureDetector(
-                    onTap: place.onLikeButtonClicked,
-                    child: Row(
-                      spacing: 2.44,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          "assets/images/ic_heart.png",
-                          package: "navigation",
-                          width: 19.03,
-                          color: place.isLiked
-                              ? ThemeColors.highlightedRed
-                              : ThemeColors.grey800,
-                          colorBlendMode: BlendMode.srcIn,
-                        ),
-                        Container(
-                          constraints: const BoxConstraints(minWidth: 26),
-                          child: Text(
-                            place.likeCount.toString(),
-                            style: TextStyle(
-                              color: place.isLiked
-                                  ? ThemeColors.highlightedRed
-                                  : ThemeColors.grey800,
-                              fontSize: 15.57,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                        ),
-                      ],
+            itemBuilder: (context, index) {
+              if (index == places.length) {
+                return Container(
+                  padding: const EdgeInsets.all(10),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(),
                     ),
                   ),
+                );
+              }
+
+              if (index == places.length - 1) {
+                widget.onLastPlaceRendered();
+              }
+
+              final place = places[index];
+
+              return GestureDetector(
+                onTap: place.onClicked,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: place.isHighligted
+                        ? Colors.white
+                        : Color(0xFFF1F1F1),
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: ThemeColors.grey800, width: 0.6),
+                  ),
+                  child: Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 9.25),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 11.98,
+                            ),
+                            child: Container(
+                              width: 65.27,
+                              height: 26.55,
+                              decoration: BoxDecoration(
+                                color: place.isHighligted
+                                    ? ThemeColors.highlightedRed
+                                    : ThemeColors.grey300,
+                                borderRadius: BorderRadius.circular(3.56),
+                                border: Border.all(
+                                  color: ThemeColors.grey800,
+                                  width: 0.6,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "${place.distance}M",
+                                  style: TextStyle(
+                                    color: place.isHighligted
+                                        ? Colors.white
+                                        : ThemeColors.grey800,
+                                    fontSize: 12.83,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 11.15),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 11.86,
+                            ),
+                            child: Text(
+                              place.name,
+                              style: const TextStyle(
+                                color: ThemeColors.grey800,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 11.86),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 11.98,
+                            ),
+                            child: Row(
+                              spacing: 5.68,
+                              children: [
+                                Container(
+                                  width: 34.95,
+                                  height: 34.95,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: place.isHighligted
+                                        ? ThemeColors.pastelYellow
+                                        : ThemeColors.grey300,
+                                    border: Border.all(
+                                      color: ThemeColors.grey800,
+                                      width: 0.6,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Image.asset(
+                                      switch (place.placeDetailIcon) {
+                                        PlaceDetailIcon.human =>
+                                          "assets/images/ic_human.png",
+                                        PlaceDetailIcon.pin =>
+                                          "assets/images/ic_pin.png",
+                                      },
+                                      package: "navigation",
+                                      width: double.infinity,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  switch (place.placeClickingBahaviorText) {
+                                    PlaceClickingBahaviorText.viewLocation =>
+                                      "위치보기",
+                                    PlaceClickingBahaviorText.findRoute =>
+                                      "길찾기",
+                                  },
+                                  style: TextStyle(
+                                    color: ThemeColors.grey800.withValues(
+                                      alpha: 0.66,
+                                    ),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 9.45),
+                        ],
+                      ),
+                      Positioned(
+                        right: 10,
+                        bottom: 8.9,
+                        child: GestureDetector(
+                          onTap: place.onLikeButtonClicked,
+                          child: Row(
+                            spacing: 2.44,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset(
+                                "assets/images/ic_heart.png",
+                                package: "navigation",
+                                width: 19.03,
+                                color: place.isLiked
+                                    ? ThemeColors.highlightedRed
+                                    : ThemeColors.grey800,
+                                colorBlendMode: BlendMode.srcIn,
+                              ),
+                              Container(
+                                constraints: const BoxConstraints(minWidth: 26),
+                                child: Text(
+                                  place.likeCount.toString(),
+                                  style: TextStyle(
+                                    color: place.isLiked
+                                        ? ThemeColors.highlightedRed
+                                        : ThemeColors.grey800,
+                                    fontSize: 15.57,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: -0.3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-      separatorBuilder: (context, index) {
-        return const SizedBox(height: 22.51);
-      },
-      itemCount:
-          widget.places.length +
-          (widget.shouldShowLoadingIndicatorAtBottom ? 1 : 0),
-    );
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 22.51);
+            },
+            itemCount:
+                places.length +
+                (widget.shouldShowLoadingIndicatorAtBottom ? 1 : 0),
+          )
+        : const Center(child: CircularProgressIndicator());
   }
 }

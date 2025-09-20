@@ -47,7 +47,7 @@ class _NavigationAppState extends State<NavigationApp> {
           );
         });
 
-    widget.vm.startNavigation().then((_) {
+    widget.vm.startNavigation().then((_) async {
       final route =
           widget.vm.routeToPlace
               ?.map((e) => (latitude: e.latitude, longitude: e.longitude))
@@ -57,6 +57,8 @@ class _NavigationAppState extends State<NavigationApp> {
               .toList();
 
       if (route == null) return;
+
+      await Future.delayed(const Duration(seconds: 2));
       _markRouteToMap(positions: route);
     });
   }
@@ -98,7 +100,12 @@ class _NavigationAppState extends State<NavigationApp> {
 
   Widget _buildNavigationMapScreen() {
     return NavigationMapScreen(
-      mapWidget: InAppWebView(onWebViewCreated: _onMapWebViewCreated),
+      mapWidget: InAppWebView(
+        initialUrlRequest: URLRequest(
+          url: WebUri("https://where-to-goes-navigation.netlify.app"),
+        ),
+        onWebViewCreated: _onMapWebViewCreated,
+      ),
       tutorial: null,
       totalTravelTime: Duration(),
       nearbyPlacePopup: _shouldShowNearbyPlacePopup
@@ -160,24 +167,21 @@ class _NavigationAppState extends State<NavigationApp> {
           )
           .toList(),
       selectedPlaceType: selectedPlaceType,
-      places:
-          nearbyPlaces
-              ?.map(
-                (e) => (
-                  distance: 100,
-                  name: e.name,
-                  isHighligted: true,
-                  placeDetailIcon: PlaceDetailIcon.pin,
-                  placeClickingBahaviorText:
-                      PlaceClickingBahaviorText.findRoute,
-                  likeCount: 100,
-                  isLiked: false,
-                  onClicked: () => _onNearbyPlaceSelected(place: e),
-                  onLikeButtonClicked: () {},
-                ),
-              )
-              .toList() ??
-          [],
+      places: nearbyPlaces
+          ?.map(
+            (e) => (
+              distance: 100,
+              name: e.name,
+              isHighligted: true,
+              placeDetailIcon: PlaceDetailIcon.pin,
+              placeClickingBahaviorText: PlaceClickingBahaviorText.findRoute,
+              likeCount: 100,
+              isLiked: false,
+              onClicked: () => _onNearbyPlaceSelected(place: e),
+              onLikeButtonClicked: () {},
+            ),
+          )
+          .toList(),
       shouldShowLoadingIndicatorAtBottom: false,
       onLastPlaceRendered: () {},
     );
@@ -192,16 +196,9 @@ class _NavigationAppState extends State<NavigationApp> {
   }
 
   void _onMapWebViewCreated(InAppWebViewController controller) {
-    controller
-        .loadUrl(
-          urlRequest: URLRequest(
-            url: WebUri("https://where-to-goes-navigation.netlify.app"),
-          ),
-        )
-        .then((_) async {
-          await Future.delayed(const Duration(seconds: 2));
-          _moveMapToCurrentPosition();
-        });
+    Future.delayed(const Duration(seconds: 2), () {
+      _moveMapToCurrentPosition();
+    });
 
     setState(() => mapController = controller);
   }

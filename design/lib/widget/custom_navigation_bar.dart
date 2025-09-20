@@ -23,19 +23,26 @@ class CustomNavigationBar extends StatelessWidget {
       builder: (context, child) {
         return visibility.value
             ? Container(
-                height: 52,
                 color: ThemeColors.grey800,
-                child: Row(
-                  children: CustomNavigationBarItems.values.map((e) {
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () => onItemTapped(e),
-                        child: Center(
-                          child: SvgPicture.asset(e.iconAsset, width: 42.17),
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                child: SafeArea(
+                  child: SizedBox(
+                    height: 52,
+                    child: Row(
+                      children: CustomNavigationBarItems.values.map((e) {
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () => onItemTapped(e),
+                            child: Center(
+                              child: SvgPicture.asset(
+                                e.iconAsset,
+                                width: 42.17,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
               )
             : const SizedBox.shrink();

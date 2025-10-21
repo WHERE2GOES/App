@@ -80,7 +80,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
           return Success(data: false);
         } else {
-          throw Exception("Login failed. No email returned");
+          return Failure(exception: Exception("Login failed. No email returned"));
         }
       }
 

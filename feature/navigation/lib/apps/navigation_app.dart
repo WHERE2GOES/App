@@ -11,6 +11,7 @@ import 'package:navigation/screens/navigation_map_screen.dart';
 import 'package:navigation/screens/navigation_nearby_place_screen.dart';
 import 'package:navigation/utils/determine_position.dart';
 import 'package:navigation/vms/navigation_view_model.dart';
+import 'package:navigation/widgets/location_permission_popup.dart';
 
 class NavigationApp extends StatefulWidget {
   const NavigationApp({super.key, required this.vm, required this.onBack});
@@ -28,24 +29,41 @@ class _NavigationAppState extends State<NavigationApp> {
   InAppWebViewController? mapController;
   bool _shouldShowNearbyPlacePopup = false;
   StreamSubscription<Position>? _positionStream;
+  final ValueNotifier<bool> _isPermissionGranted = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
 
-    _positionStream =
-        Geolocator.getPositionStream(
-          locationSettings: LocationSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 100,
-          ),
-        ).listen((Position? position) {
-          if (position == null) return;
-          _updatedCurrentPosition(
-            latitude: position.latitude,
-            longitude: position.longitude,
-          );
-        });
+    _isPermissionGranted.addListener(() {
+      if (!_isPermissionGranted.value) return;
+      if (_positionStream != null) return;
+
+      setState(() {
+        _positionStream =
+            Geolocator.getPositionStream(
+              locationSettings: LocationSettings(
+                accuracy: LocationAccuracy.high,
+                distanceFilter: 100,
+              ),
+            ).listen((Position? position) {
+              if (position == null) return;
+              _updatedCurrentPosition(
+                latitude: position.latitude,
+                longitude: position.longitude,
+              );
+            });
+      });
+    });
+
+    GeolocatorPlatform.instance.checkPermission().then((permission) {
+      if (permission != LocationPermission.always &&
+          permission != LocationPermission.whileInUse) {
+        _showLocationPermissionPopup();
+      } else {
+        _isPermissionGranted.value = true;
+      }
+    });
 
     widget.vm.startNavigation().then((_) async {
       final route =
@@ -66,6 +84,7 @@ class _NavigationAppState extends State<NavigationApp> {
   @override
   void dispose() {
     _positionStream?.cancel();
+    _isPermissionGranted.dispose();
     super.dispose();
   }
 
@@ -292,5 +311,24 @@ class _NavigationAppState extends State<NavigationApp> {
         });
 
     _navigatorKey.currentState?.pushNamed("/");
+  }
+
+  void _showLocationPermissionPopup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return LocationPermissionPopup(
+          onOkClicked: () {
+            Navigator.pop(context);
+            GeolocatorPlatform.instance.requestPermission().then((permission) {
+              if (permission == LocationPermission.always ||
+                  permission == LocationPermission.whileInUse) {
+                _isPermissionGranted.value = true;
+              }
+            });
+          },
+        );
+      },
+    );
   }
 }

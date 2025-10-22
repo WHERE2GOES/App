@@ -96,7 +96,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
           Container(
             width: 87.79,
             height: 87.79,
-            decoration: BoxDecoration(shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ThemeColors.grey300,
+            ),
+            clipBehavior: Clip.antiAlias,
             child: profileImage != null
                 ? FutureImage(
                     imageFuture: profileImage,

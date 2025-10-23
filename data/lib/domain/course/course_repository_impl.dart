@@ -48,9 +48,25 @@ class CourseRepositoryImpl implements CourseRepository {
           regionName: data.country!,
           description: data.aiSummary!,
           bannerImage: getFutureFromImageUrl(data.imageUrl!),
-          scores: data.weights!.entries.map((e) {
-            return CourseScoreEntity(name: e.key, score: e.value);
-          }),
+          scores: [
+            CourseScoreEntity(
+              name: "activity",
+              score: data.weighted!.activity! / 10,
+            ),
+            CourseScoreEntity(
+              name: "difficulty",
+              score: data.weighted!.difficulty! / 10,
+            ),
+            CourseScoreEntity(name: "food", score: data.weighted!.food! / 10),
+            CourseScoreEntity(
+              name: "weather",
+              score: data.weighted!.weather! / 10,
+            ),
+            CourseScoreEntity(
+              name: "festival",
+              score: data.weighted!.festival! / 10,
+            ),
+          ],
         ),
       );
     } on Exception catch (e) {

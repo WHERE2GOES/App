@@ -36,6 +36,7 @@ class _TestApp extends StatelessWidget {
           food: 0.9,
           culture: 0.7,
         ),
+        isSubmitButtonEnabled: true,
         spotCategories: [
           (
             title: RichText(

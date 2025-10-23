@@ -224,6 +224,7 @@ class _HomeAppState extends State<HomeApp> {
                 ),
               )
               .toList(),
+      isSubmitButtonEnabled: widget.vm.currentCourse == null,
       onBackButtonClicked: _back,
       onSubmitButtonClicked: _onCourseSubmitted,
     );

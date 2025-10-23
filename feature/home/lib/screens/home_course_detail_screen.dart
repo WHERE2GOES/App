@@ -19,6 +19,7 @@ class HomeCourseDetailScreen extends StatefulWidget {
     required this.courseDescription,
     required this.courseScore,
     required this.spotCategories,
+    required this.isSubmitButtonEnabled,
     required this.onBackButtonClicked,
     required this.onSubmitButtonClicked,
   });
@@ -28,6 +29,7 @@ class HomeCourseDetailScreen extends StatefulWidget {
   final String? courseDescription;
   final CourseScore? courseScore;
   final List<({RichText title, List<CourseSpot>? spots})> spotCategories;
+  final bool isSubmitButtonEnabled;
   final VoidCallback onBackButtonClicked;
   final VoidCallback onSubmitButtonClicked;
 
@@ -72,7 +74,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) =>
-                      const SizedBox(height: 37),
+                      const SizedBox(height: 10),
                   itemCount: spotCategories.length,
                 ),
                 const SizedBox(height: 200),
@@ -240,7 +242,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
           children: [
             Expanded(
               child: SizedBox(
-                height: 115,
+                height: 160,
                 child: ListView.separated(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
@@ -249,26 +251,49 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                     final spot = spots?[index];
                     final image = spot?.image;
 
-                    return Container(
+                    return SizedBox(
                       width: 115,
-                      height: 115,
-                      clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: ThemeColors.grey800,
-                          width: 0.5,
-                        ),
-                        color: Colors.white,
+                      height: double.infinity,
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 115,
+                            height: 115,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: ThemeColors.grey800,
+                                width: 0.5,
+                              ),
+                              color: Colors.white,
+                            ),
+                            child: image != null
+                                ? FutureImage(
+                                    imageFuture: image,
+                                    width: 115,
+                                    height: 115,
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          Text(
+                            spot?.name.replaceAllMapped(
+                                  RegExp(r'(\S)(?=\S)'),
+                                  (m) => '${m[1]}\u200D',
+                                ) ??
+                                "",
+                            maxLines: 2,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                              color: ThemeColors.grey800,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w300,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                      child: image != null
-                          ? FutureImage(
-                              imageFuture: image,
-                              width: 115,
-                              height: 115,
-                              fit: BoxFit.cover,
-                            )
-                          : null,
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) =>
@@ -286,7 +311,7 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
   Widget _buildSubmitButtonBar() {
     return CustomBottomSheet(
       showDragHandle: false,
-      initialHeight: 128 + MediaQuery.of(context).viewPadding.bottom,
+      initialHeight: 150 + MediaQuery.of(context).viewPadding.bottom,
       child: Stack(
         children: [
           Positioned(
@@ -308,32 +333,55 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
           Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
-              spacing: 21.37,
+              spacing: 20,
               children: [
                 RichText(
+                  textAlign: TextAlign.center,
                   text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: widget.courseName,
-                        style: TextStyle(
-                          color: ThemeColors.pastelGreen,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      TextSpan(
-                        text: " 코스를 진행할까요?",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
+                    children: widget.isSubmitButtonEnabled
+                        ? [
+                            TextSpan(
+                              text: widget.courseName,
+                              style: TextStyle(
+                                color: ThemeColors.pastelGreen,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            TextSpan(
+                              text: " 코스를 진행할까요?",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ]
+                        : [
+                            TextSpan(
+                              text: "이미 진행중인 코스가 있어요!",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            TextSpan(text: "\n"),
+                            TextSpan(
+                              text: "새 코스를 진행하려면 현재 코스를 종료해주세요.",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                   ),
                 ),
                 GestureDetector(
-                  onTap: widget.onSubmitButtonClicked,
+                  onTap: widget.isSubmitButtonEnabled
+                      ? widget.onSubmitButtonClicked
+                      : null,
                   child: Container(
                     width: double.infinity,
                     height: 37.24,
@@ -349,7 +397,9 @@ class _HomeCourseDetailScreenState extends State<HomeCourseDetailScreen> {
                     child: Text(
                       "코스 진행하기",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: widget.isSubmitButtonEnabled
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.3),
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),

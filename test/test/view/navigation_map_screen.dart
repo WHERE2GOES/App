@@ -28,6 +28,7 @@ class _TestAppState extends State<_TestApp> {
         ),
         tutorial: null, // (step: 1, onDismissed: () {}),
         totalTravelTime: Duration(hours: 35),
+        courseTerminationButton: null,
         nearbyPlacePopup: (
           buttons: [
             (

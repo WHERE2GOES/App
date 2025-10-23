@@ -15,6 +15,7 @@ class NavigationMapScreen extends StatefulWidget {
     required this.mapWidget,
     required this.tutorial,
     required this.totalTravelTime,
+    required this.courseTerminationButton,
     required this.nearbyPlacePopup,
     required this.destinationName,
     required this.routeGuidanceItems,
@@ -27,6 +28,7 @@ class NavigationMapScreen extends StatefulWidget {
   final Widget mapWidget;
   final ({int step, VoidCallback onDismissed})? tutorial;
   final Duration totalTravelTime;
+  final ({VoidCallback onClicked})? courseTerminationButton;
   final ({List<NearbyPlacePopupButtonProp> buttons, VoidCallback onDismissed})?
   nearbyPlacePopup;
   final String destinationName;
@@ -64,6 +66,7 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
 
     final tutorial = widget.tutorial;
     final nearbyPlacePopup = widget.nearbyPlacePopup;
+    final courseTerminationButton = widget.courseTerminationButton;
 
     return Stack(
       fit: StackFit.expand,
@@ -99,6 +102,33 @@ class _NavigationMapScreenState extends State<NavigationMapScreen> {
                                   onClicked:
                                       widget.onGoToCurrentLocationButtonClicked,
                                 ),
+                                if (courseTerminationButton != null)
+                                  GestureDetector(
+                                    onTap: courseTerminationButton.onClicked,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 37.24,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: ThemeColors.pastelYellow,
+                                        border: Border.all(
+                                          color: ThemeColors.grey800,
+                                          width: 0.6,
+                                        ),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        "코스 종료",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: ThemeColors.grey800,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),

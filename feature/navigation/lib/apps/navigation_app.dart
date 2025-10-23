@@ -11,6 +11,7 @@ import 'package:navigation/screens/navigation_map_screen.dart';
 import 'package:navigation/screens/navigation_nearby_place_screen.dart';
 import 'package:navigation/utils/determine_position.dart';
 import 'package:navigation/vms/navigation_view_model.dart';
+import 'package:navigation/widgets/course_termination_confirm_popup.dart';
 import 'package:navigation/widgets/location_permission_popup.dart';
 
 class NavigationApp extends StatefulWidget {
@@ -127,6 +128,9 @@ class _NavigationAppState extends State<NavigationApp> {
       ),
       tutorial: null,
       totalTravelTime: Duration(),
+      courseTerminationButton: widget.vm.currentCourse != null
+          ? (onClicked: _onCourseTerminationButtonClicked)
+          : null,
       nearbyPlacePopup: _shouldShowNearbyPlacePopup
           ? (
               buttons: PlaceType.values
@@ -326,6 +330,22 @@ class _NavigationAppState extends State<NavigationApp> {
                 _isPermissionGranted.value = true;
               }
             });
+          },
+        );
+      },
+    );
+  }
+
+  void _onCourseTerminationButtonClicked() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CourseTerminationConfirmPopup(
+          onCancelClicked: () => Navigator.pop(context),
+          onOkClicked: () {
+            _markRouteToMap(positions: []);
+            widget.vm.terminateCourse();
+            Navigator.pop(context);
           },
         );
       },

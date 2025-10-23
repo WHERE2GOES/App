@@ -97,4 +97,13 @@ class NavigationViewModel extends ChangeNotifier {
     routeToPlace = routeResponse.data;
     notifyListeners();
   }
+
+  Future<void> terminateCourse() async {
+    final terminateCourseResponse = await courseRepository.endCourse();
+    if (terminateCourseResponse is! Success) return;
+
+    currentCourse = null;
+    route = null;
+    notifyListeners();
+  }
 }

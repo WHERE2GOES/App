@@ -3,41 +3,39 @@
 이 프로젝트는 기능과 역할을 기준으로 여러 개의 패키지로 분리된 모노레포 구조를 따릅니다. 각 패키지 간의 의존성은 아래 다이어그램과 같습니다.
 
 ```mermaid
-graph TD;
-    subgraph Packages
-        app --> di;
+graph LR;
+    app --> di;
 
-        di --> feature_home;
-        di --> feature_login;
-        di --> feature_mypage;
-        di --> feature_navigation;
-        di --> feature_reward;
-        di --> data;
+    di --> feature_home;
+    di --> feature_login;
+    di --> feature_mypage;
+    di --> feature_navigation;
+    di --> feature_reward;
+    di --> data;
 
-        feature_home --> core;
-        feature_home --> design;
+    feature_home --> core;
+    feature_home --> design;
 
-        feature_login --> core;
-        feature_login --> design;
+    feature_login --> core;
+    feature_login --> design;
 
-        feature_mypage --> core;
-        feature_mypage --> design;
+    feature_mypage --> core;
+    feature_mypage --> design;
 
-        feature_navigation --> core;
-        feature_navigation --> design;
+    feature_navigation --> core;
+    feature_navigation --> design;
 
-        feature_reward --> core;
-        feature_reward --> design;
+    feature_reward --> core;
+    feature_reward --> design;
 
-        data --> core;
-    end
+    data --> core;
 
-    style app fill:#f9f,stroke:#333,stroke-width:2px
-    style feature_home fill:#bbf,stroke:#333,stroke-width:2px
-    style feature_login fill:#bbf,stroke:#333,stroke-width:2px
-    style feature_mypage fill:#bbf,stroke:#333,stroke-width:2px
-    style feature_navigation fill:#bbf,stroke:#333,stroke-width:2px
-    style feature_reward fill:#bbf,stroke:#333,stroke-width:2px
+    style app stroke:#f9f,stroke-width:2px
+    style feature_home stroke:#bbf,stroke-width:2px
+    style feature_login stroke:#bbf,stroke-width:2px
+    style feature_mypage stroke:#bbf,stroke-width:2px
+    style feature_navigation stroke:#bbf,stroke-width:2px
+    style feature_reward stroke:#bbf,stroke-width:2px
 ```
 
 - **`app`**: 최종 애플리케이션을 구성하고 실행하는 메인 패키지입니다. 모든 `feature`와 공통 모듈을 통합합니다.
